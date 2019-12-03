@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-//     // Testing Mode for TESTING PURPOSES ONLY
+        // Testing Mode for TESTING PURPOSES ONLY
 //        loanServices.testingMode();
 
         // To start loan calculator
