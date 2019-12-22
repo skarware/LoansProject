@@ -1,6 +1,6 @@
 package lt.learntocode.loansapp.loansbase.utils;
 
-public class ValidationUtils {
+public class ValidationUtil {
 
     public static boolean intInputRange(int input, int from, int to) {
         boolean inputIsValid = input >= from && input <= to;

@@ -1,62 +1,76 @@
 package lt.learntocode.loansapp.loansbase.services;
 
-import lt.learntocode.loansapp.loansbase.utils.FileUtils;
+import lt.learntocode.loansapp.loansbase.utils.FileUtil;
 import lt.learntocode.loansapp.loansbase.model.Loan;
-import lt.learntocode.loansapp.loansbase.helpers.LoanHelper;
+import lt.learntocode.loansapp.loansbase.helpers.LoansCalculatorHelper;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
 
 import java.io.*;
 
 public class FileServices {
 
-    private static final String MAIN_FILE_NAME = "recourses/loansData.txt";
+    private static final String MAIN_FILE_NAME = "resources/loansData.txt";
     private static final File FILE_TO_SAVE = new File(MAIN_FILE_NAME);
     private static final File FILE_TO_LOAD = new File(MAIN_FILE_NAME);
-    private static final String PAYMENTS_FILES_FOLDER = "recourses/paymentsSchedules/";
+    private static final String PAYMENTS_FILES_FOLDER = "resources/paymentsSchedules/";
 
-    //method to save paymentsSchedule[] array objects as CSV string lines into the file
-    public void savePaymentsScheduleToFile(LoansData loansData) {
+    // method to save loansData array objects as CSV string lines into the file
+    public boolean saveLoansData(LoansData loansData) {
+        String loansDataString = loansData.toCSVStrings(); // get loan[] as CSV strings
+        // save loan[] and paymentsSchedule[] to separate files inside resources and paymentsSchedules folders
+        if (saveStringToFile(loansDataString, FILE_TO_SAVE) && savePaymentsScheduleToFile(loansData)) {
+            // if both operations true
+            return true;
+        }
+        // return false if any of save operations fails to write data to file
+        return false;
+    }
+
+    // method to save paymentsSchedule[] array objects as CSV string lines into the file
+    public boolean savePaymentsScheduleToFile(LoansData loansData) {
         int loanIndex = loansData.getLoansDataRecordsCounter() - 1;
         File file = new File((PAYMENTS_FILES_FOLDER + "loan_" + (loanIndex + 1) + ".txt")); // recourses/paymentsSchedules/loan_1.txt
         Loan loan = loansData.getLoan(loanIndex);
         String paymentsScheduleString = loan.toCSVStrings();
-        saveStringToFile(paymentsScheduleString, file);
+        if (saveStringToFile(paymentsScheduleString, file)) {
+            return true;
+        }
+        return false;
     }
 
-    //method to save loansData array objects as CSV string lines into the file
-    public void saveLoansDataToFile(LoansData loansData) {
-        String loansDataString = loansData.toCSVStrings(); // get loan[] as CSV strings
-        saveStringToFile(loansDataString, FILE_TO_SAVE);    // save loan[]
-        savePaymentsScheduleToFile(loansData);  // save paymentsSchedule[] to separate files inside paymentsSchedules folder
-    }
-
-    //method to save string lines into the file
-    private void saveStringToFile(String string, File file) {
+    // method to save string lines into the file
+    private boolean saveStringToFile(String string, File file) {
         if (!file.exists()) {
             try {
                 if (file.createNewFile()) {
-                    if (FileUtils.writeFile(string, file)) {
-//                        System.out.println("Nauji duomenys sėkminai įrašyti į failą."); // jei uncommented the messege will come twice in a row
+                    if (FileUtil.writeFile(string, file)) {
+                        // return true if String data written to file successfully
+                        return true;
                     } else {
                         System.err.println("Klaida: Nepavyko irasyti duomenu \"" + string + "\" i file");
+                        return false;
                     }
                 } else {
                     System.err.println("Klaida: Nepavyko sukurti failo ir irasyti \"" + string + "\" i file");
+                    return false;
                 }
             } catch (IOException e) {
                 System.err.println("IOException: Nepavyko sukurti failo ir i ji irasyti duomenu  \"" + string + "\": " + e.getMessage());
+                return false;
             }
         } else {
-            if (FileUtils.writeFile(string, file)) {
+            if (FileUtil.writeFile(string, file)) {
                 System.out.println("Nauji duomenys sėkminai įrašyti į failą.");
+                return true;
             } else {
                 System.err.println("Klaida: Nepavyko irasyti \"" + string + "\" i file");
+                return false;
             }
         }
     }
 
-    //method to read CSV string lines from a file, convert to loan[] array objects and return LoansData object;
-    public LoansData loadLoansDataFromFile(LoansData loansData) {
+    // method to read CSV string lines from a file, convert to loan[] array objects
+    public boolean loadLoansData(LoansData loansData) {
         if (parseBufferedCSVStrings(loansData)) {
             System.out.print("Bandoma užkrauti paskolų duomenis iš failo...");
             if (loansData.getLoansDataRecordsCounter() > 0) {
@@ -64,18 +78,18 @@ public class FileServices {
             } else {
                 System.out.println("\tduomenų failas tuščias.");
             }
-            return loansData; // in case load is successful give data from a file
+            return true; // return true if data loading from a file is successful
         } else {
             System.err.println("...KLAIDA: Nepavyko atkurti paskolų duomenų iš failo...");
-            return new LoansData(); // if file parsing fails then create and return new empty LoansData obj
+            return false; // if data loading from a file failed return false
         }
     }
 
     private boolean parseBufferedCSVStrings(LoansData loansData) {
         // create loanHelper obj to calculate loan's payment schedule
-        LoanHelper loanHelper = new LoanHelper();
+        LoansCalculatorHelper loansCalculatorHelper = new LoansCalculatorHelper();
         // parse buffer returned from a readFile() method in FileUtils class
-        try (BufferedReader bufferedCSVStrings = FileUtils.readFile(FILE_TO_LOAD)) {
+        try (BufferedReader bufferedCSVStrings = FileUtil.readFile(FILE_TO_LOAD)) {
             String CSVLine = null;
             Loan loan;
             do {
@@ -91,7 +105,7 @@ public class FileServices {
                     }
                     if (loansData.insertNewLoan(loan)) { // insert new loan object into loansData array
                         if (loan != null) {
-                            loanHelper.calcPaymentsSchedule(loan); // if inserted successfully calculate new loan's payment schedule
+                            loansCalculatorHelper.calcPaymentsSchedule(loan); // if inserted successfully calculate new loan's payment schedule
                         } else {
                             System.err.println("Klaida: skaitant duomenis is failo gautas 'null' loan objektas");
                         }

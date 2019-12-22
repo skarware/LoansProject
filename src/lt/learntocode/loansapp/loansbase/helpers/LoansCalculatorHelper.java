@@ -3,7 +3,7 @@ package lt.learntocode.loansapp.loansbase.helpers;
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.Payment;
 
-public class LoanHelper {
+public class LoansCalculatorHelper {
 
     public void calcPaymentsSchedule(Loan loan) {
         double periodPayment = loan.getPeriodPayment(); // need for a local copy to change locally periodPayment if last payment is less then initial periodPayment

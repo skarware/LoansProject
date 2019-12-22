@@ -1,9 +1,9 @@
-package lt.learntocode.loansapp.cli;
+package lt.learntocode.loansapp.loansbase.services;
 
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
 import lt.learntocode.loansapp.loansbase.model.Payment;
-import lt.learntocode.loansapp.loansbase.utils.ValidationUtils;
+import lt.learntocode.loansapp.loansbase.utils.ValidationUtil;
 
 import java.util.Scanner;
 
@@ -20,7 +20,7 @@ public class CLIServices {
             } catch (Exception e) {
                 System.err.println("Šis meniu nepriima raidžių simbolių");
             }
-        } while (!ValidationUtils.intInputRange(input, from, to));
+        } while (!ValidationUtil.intInputRange(input, from, to));
         return input;
     }
 
@@ -33,7 +33,7 @@ public class CLIServices {
             } catch (Exception e) {
                 System.err.println("Šis meniu nepriima raidžių simbolių");
             }
-        } while (!ValidationUtils.doubleInputRange(input, from, to));
+        } while (!ValidationUtil.doubleInputRange(input, from, to));
         return input;
     }
 
@@ -46,7 +46,7 @@ public class CLIServices {
             } catch (Exception e) {
                 System.err.println("KLAIDA getValidStringInput() metode");
             }
-        } while (!ValidationUtils.stringInputLength(input, minWords, maxLength));
+        } while (!ValidationUtil.stringInputLength(input, minWords, maxLength));
         return input;
     }
 
@@ -59,7 +59,7 @@ public class CLIServices {
             } catch (Exception e) {
                 System.err.println("KLAIDA getValidCharKeyInput() metode");
             }
-        } while (!ValidationUtils.charKeyInput(key, (char[]) validKeyOptions));
+        } while (!ValidationUtil.charKeyInput(key, (char[]) validKeyOptions));
         return key;
     }
 

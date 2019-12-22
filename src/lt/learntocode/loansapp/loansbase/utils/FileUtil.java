@@ -2,7 +2,7 @@ package lt.learntocode.loansapp.loansbase.utils;
 
 import java.io.*;
 
-public class FileUtils {
+public class FileUtil {
 
     public static boolean writeFile(String string, File file) { // could pass file instead of String of FILENAME
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, false)))) {

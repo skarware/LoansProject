@@ -1,23 +1,30 @@
 package lt.learntocode.loansapp.loansbase.services;
 
-import lt.learntocode.loansapp.cli.CLIServices;
-import lt.learntocode.loansapp.loansbase.helpers.LoanHelper;
+import lt.learntocode.loansapp.loansbase.database.ConnectionManager;
+import lt.learntocode.loansapp.loansbase.helpers.LoansCalculatorHelper;
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
 
 public class LoanServices {
-    private static final LoanHelper loanHelper = new LoanHelper();
-    private static final FileServices fileServices = new FileServices();
-    private static final CLIServices cli = new CLIServices();
-    //    private static final GUIServices gui = new GUIServices();
-    private LoansData loansData = new LoansData(); // be static kiekvienam naujam LoanServisui sukuriama po nauja paskolu masyva...
-    private static boolean firstProgramStart = true;
+    private LoansData loansData = new LoansData();
+    private final LoansCalculatorHelper loansCalculatorHelper = new LoansCalculatorHelper();
+    private final FileServices fileServices = new FileServices();
+    private final DBServices dbServices = new DBServices();
+    private final CLIServices cli = new CLIServices();
+    private boolean firstProgramStart = true;
+    private DataSrc dataSrc = DataSrc.FILE;
+
+    // public method to chose data source to load loansData obj from and save to
+    public void setDataSrc(DataSrc dataSrc) {
+        this.dataSrc = dataSrc;
+        System.out.println("Data source: " + dataSrc);
+    }
 
     void testingMode() {
         // insert some loans for testing purposes only
         this.createMonthlyScheduledLoan(new Loan("testas vienas", 1000, 12, 10, 0, 10, 0)); // FOR TESTING PURPOSES ONLY //
         this.createMonthlyScheduledLoan(new Loan("testas du", 1000, 12, 10, 100, 10, 0)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan("testas trys", 1000, 12, 10, 50, 0,100d)); // FOR TESTING PURPOSES ONLY //
+        this.createMonthlyScheduledLoan(new Loan("testas trys", 1000, 12, 10, 50, 0, 100d)); // FOR TESTING PURPOSES ONLY //
         this.createMonthlyScheduledLoan(new Loan("testas keturi", 1000, 12, 10, 100, 0, 100d)); // FOR TESTING PURPOSES ONLY //
         // To test how toCSVString() output looks
 //        for (int i = 0; i < 4; i++) {
@@ -35,21 +42,65 @@ public class LoanServices {
 //            //run CMD version (set some boolean CLI = true;?)
 //        }
 
-        // if first program start then load loansData from a file
+        // If first program start then Initialize loansData obj with data from a file or Database
         if (firstProgramStart) {
-            // loansData obj to be filled with data from a CSV file
-            fileServices.loadLoansDataFromFile(loansData);
-            // set to false so then next time start() method is called we do not redundantly load data from file
+            this.initializeLoansDataObj();
+            // Set to false so then next time start() method is called we do not redundantly load data from file
             firstProgramStart = false;
         }
         // run the main menu on start
         this.initiateMainMenu();
     }
 
+    private void initializeLoansDataObj() {
+        boolean dataLoadedSuccessfully = true;
+        switch (this.dataSrc) {
+            case DATABASE:
+                // Load loansData obj from database
+                dataLoadedSuccessfully = dbServices.loadLoansData(loansData);
+                break;
+            case FILE:
+                // Load loansData obj to be filled with data from a CSV file
+                dataLoadedSuccessfully = fileServices.loadLoansData(loansData);
+                break;
+            default:
+                System.err.println("Not valid option for Loading initial data");
+                break;
+        }
+        // If data Loading from a chosen source fails then create and reassign new empty LoansData obj
+        if (!dataLoadedSuccessfully) {
+            loansData = new LoansData();
+            System.err.println("Initial Data Loading from a chosen source failed - initializing program with empty LoansData obj");
+        }
+    }
+
+    private void saveLoansDataObj() {
+        boolean dataSavedSuccessfully = true;
+        switch (this.dataSrc) {
+            case DATABASE:
+                // Save loansData obj to DATABASE
+                dataSavedSuccessfully = dbServices.saveLoansData(loansData);
+                break;
+            case FILE:
+                // Save loansData obj to FILE
+                dataSavedSuccessfully = fileServices.saveLoansData(loansData);
+                break;
+            default:
+                System.err.println("Not valid option for Loading initial data");
+                break;
+        }
+        // If data Saving to a chosen source fails then inform the user
+        if (!dataSavedSuccessfully) {
+            System.err.println("Data Saving to a chosen source failed - LoansData obj data might be lost on data source");
+        }
+    }
+
     private void exitProgram() {
         // Start the procedure to exit a program
         System.out.println("\n\tPrograma baigia darbą,\n\t\t\t iki...");
-        // save data to files
+        // close Database connection on application exit
+        ConnectionManager.getInstance().close();
+        // exit the application
         System.exit(0);
     }
 
@@ -74,7 +125,7 @@ public class LoanServices {
 
     private void createFastMonthlyScheduledLoan(Loan loan) {
         // After new loan obj inserted calculate Payment Schedule
-        loanHelper.calcPaymentsSchedule(loan);
+        loansCalculatorHelper.calcPaymentsSchedule(loan);
         // print loan obj to console
         cli.printSchedule(loan);
         // Back to Start
@@ -84,11 +135,11 @@ public class LoanServices {
         // if new Loan inserted successfully then do the calculations for a given loan
         if (loansData.insertNewLoan(loan)) {
             // After new loan obj inserted calculate Payment Schedule
-            loanHelper.calcPaymentsSchedule(loan);
+            loansCalculatorHelper.calcPaymentsSchedule(loan);
             // print loan obj to console
             cli.printSchedule(loan);
-            // save new data from loansData to a file
-            fileServices.saveLoansDataToFile(loansData);
+            // save new data from loansData to a FILE or DATABASE
+            this.saveLoansDataObj();
         } else {
             System.err.println("Klaida: Nepavyko irasyti naujos paskolos i masyva."); // just in case it fails inform the user
         }
