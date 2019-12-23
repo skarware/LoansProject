@@ -22,10 +22,10 @@ public class LoanServices {
 
     void testingMode() {
         // insert some loans for testing purposes only
-        this.createMonthlyScheduledLoan(new Loan("testas vienas", 1000, 12, 10, 0, 10, 0)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan("testas du", 1000, 12, 10, 100, 10, 0)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan("testas trys", 1000, 12, 10, 50, 0, 100d)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan("testas keturi", 1000, 12, 10, 100, 0, 100d)); // FOR TESTING PURPOSES ONLY //
+        this.createMonthlyScheduledLoan(new Loan(0, "testas vienas", 1000, 12, 10, 0, 10, 0)); // FOR TESTING PURPOSES ONLY //
+        this.createMonthlyScheduledLoan(new Loan(1, "testas du", 1000, 12, 10, 100, 10, 0)); // FOR TESTING PURPOSES ONLY //
+        this.createMonthlyScheduledLoan(new Loan(2, "testas trys", 1000, 12, 10, 50, 0, 100d)); // FOR TESTING PURPOSES ONLY //
+        this.createMonthlyScheduledLoan(new Loan(3, "testas keturi", 1000, 12, 10, 100, 0, 100d)); // FOR TESTING PURPOSES ONLY //
         // To test how toCSVString() output looks
 //        for (int i = 0; i < 4; i++) {
 //            System.out.println("toCSVString(): " + loansData.getLoan(i).toCSVString());
@@ -53,45 +53,45 @@ public class LoanServices {
     }
 
     private void initializeLoansDataObj() {
-        boolean dataLoadedSuccessfully = true;
+        boolean isDataLoadedSuccessfully = true;
         switch (this.dataSrc) {
             case DATABASE:
                 // Load loansData obj from database
-                dataLoadedSuccessfully = dbServices.loadLoansData(loansData);
+                isDataLoadedSuccessfully = dbServices.loadLoansData(loansData);
                 break;
             case FILE:
                 // Load loansData obj to be filled with data from a CSV file
-                dataLoadedSuccessfully = fileServices.loadLoansData(loansData);
+                isDataLoadedSuccessfully = fileServices.loadLoansData(loansData);
                 break;
             default:
-                System.err.println("Not valid option for Loading initial data");
+                System.err.println("ERROR: Not valid option for Loading initial data");
                 break;
         }
         // If data Loading from a chosen source fails then create and reassign new empty LoansData obj
-        if (!dataLoadedSuccessfully) {
+        if (!isDataLoadedSuccessfully) {
             loansData = new LoansData();
-            System.err.println("Initial Data Loading from a chosen source failed - initializing program with empty LoansData obj");
+            System.err.println("ERROR: Initial Data Loading from a chosen source failed - initializing program with empty LoansData obj");
         }
     }
 
     private void saveLoansDataObj() {
-        boolean dataSavedSuccessfully = true;
+        boolean isDataSavedSuccessfully = true;
         switch (this.dataSrc) {
             case DATABASE:
                 // Save loansData obj to DATABASE
-                dataSavedSuccessfully = dbServices.saveLoansData(loansData);
+                isDataSavedSuccessfully = dbServices.saveLoansData(loansData);
                 break;
             case FILE:
                 // Save loansData obj to FILE
-                dataSavedSuccessfully = fileServices.saveLoansData(loansData);
+                isDataSavedSuccessfully = fileServices.saveLoansData(loansData);
                 break;
             default:
-                System.err.println("Not valid option for Loading initial data");
+                System.err.println("ERROR: Not valid option for Saving data");
                 break;
         }
         // If data Saving to a chosen source fails then inform the user
-        if (!dataSavedSuccessfully) {
-            System.err.println("Data Saving to a chosen source failed - LoansData obj data might be lost on data source");
+        if (!isDataSavedSuccessfully) {
+            System.err.println("ERROR: Data Saving to a chosen source failed - LoansData obj data might be lost on data source");
         }
     }
 
@@ -109,12 +109,12 @@ public class LoanServices {
         int userOption = cli.getMainMenu();
         // useOption returns 3 different ways to follow
         if (userOption == 97 || userOption == 65) { // if key == 'a' or A
-            Loan loan = cli.getMenuAddLoan(); // get User Interface and new loan obj from add new loan menu
+            Loan loan = cli.getMenuAddLoan(loansData.getLoansDataRecordsCounter()); // get User Interface and new loan obj from add new loan menu
             this.createMonthlyScheduledLoan(loan); // and add new loan into Loan Array
         } else if (userOption == 98 || userOption == 66) { // if key == 'b' or B
             cli.getMenuLoansSummary(loansData); // view loans in loanArr
         } else if (userOption == 99 || userOption == 67) { // if key == 'c' or C
-            Loan loan = cli.getMenuAddLoan();
+            Loan loan = cli.getMenuAddLoan(loansData.getLoansDataRecordsCounter());
             this.createFastMonthlyScheduledLoan(loan); // calculate ne loan but dont save/insert into loanArr
         } else if (userOption == 101 || userOption == 69) {
             this.exitProgram(); // Exit program if key == 'e' or E
@@ -133,7 +133,7 @@ public class LoanServices {
 
     private void createMonthlyScheduledLoan(Loan loan) {
         // if new Loan inserted successfully then do the calculations for a given loan
-        if (loansData.insertNewLoan(loan)) {
+        if (loansData.insertNewLoan(loan) > -1) {
             // After new loan obj inserted calculate Payment Schedule
             loansCalculatorHelper.calcPaymentsSchedule(loan);
             // print loan obj to console

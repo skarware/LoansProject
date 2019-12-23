@@ -103,7 +103,7 @@ public class FileServices {
                     if (loan == null) {
                         return false;
                     }
-                    if (loansData.insertNewLoan(loan)) { // insert new loan object into loansData array
+                    if (loansData.insertNewLoan(loan) > -1) { // insert new loan object into loansData array
                         if (loan != null) {
                             loansCalculatorHelper.calcPaymentsSchedule(loan); // if inserted successfully calculate new loan's payment schedule
                         } else {
@@ -126,21 +126,22 @@ public class FileServices {
         if (CSVLine == null) return null; //
         if (CSVLine.equals("")) return null;
         if (CSVLine.equals("null")) return null;
-        String fullName = findNthValueInCSVLine(CSVLine, 0);
+        String fullName = findNthValueInCSVLine(CSVLine, 1);
         double loanAmount = 0, interestRate = 0, administrationFee = 0, fixedPeriodPayment = 0;
-        int compoundRate = 0, loanTerm = 0;
+        int loanId = 0, compoundRate = 0, loanTerm = 0;
         try {
-            loanAmount = Double.parseDouble(findNthValueInCSVLine(CSVLine, 1));
-            compoundRate = Integer.parseInt(findNthValueInCSVLine(CSVLine, 2));
-            interestRate = Double.parseDouble(findNthValueInCSVLine(CSVLine, 3));
-            administrationFee = Double.parseDouble(findNthValueInCSVLine(CSVLine, 4));
-            loanTerm = Integer.parseInt(findNthValueInCSVLine(CSVLine, 5));
-            fixedPeriodPayment = Double.parseDouble(findNthValueInCSVLine(CSVLine, 6));
+            loanId = Integer.parseInt(findNthValueInCSVLine(CSVLine, 0));
+            loanAmount = Double.parseDouble(findNthValueInCSVLine(CSVLine, 2));
+            compoundRate = Integer.parseInt(findNthValueInCSVLine(CSVLine, 3));
+            interestRate = Double.parseDouble(findNthValueInCSVLine(CSVLine, 4));
+            administrationFee = Double.parseDouble(findNthValueInCSVLine(CSVLine, 5));
+            loanTerm = Integer.parseInt(findNthValueInCSVLine(CSVLine, 6));
+            fixedPeriodPayment = Double.parseDouble(findNthValueInCSVLine(CSVLine, 7));
         } catch (NumberFormatException e) {
             System.err.println("NumberFormatException Klaida: Nepavyko isparsinti bufferedCSVStrings eilutes i int ar double tipa.");
             return null;
         }
-        return new Loan(fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);
+        return new Loan(loanId, fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);
     }
 
     private String findNthValueInCSVLine(String CSVLine, int offSet) {

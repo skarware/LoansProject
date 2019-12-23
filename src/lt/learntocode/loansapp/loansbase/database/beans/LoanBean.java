@@ -1,6 +1,6 @@
 package lt.learntocode.loansapp.loansbase.database.beans;
 
-public class Loan {
+public class LoanBean {
     private int loanId;
     private String fullName;
     private double loanAmount;

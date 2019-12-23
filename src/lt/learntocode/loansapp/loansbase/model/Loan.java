@@ -3,6 +3,7 @@ package lt.learntocode.loansapp.loansbase.model;
 import java.time.LocalDate;
 
 public class Loan {
+    private int loanId;
     private final String fullName;
     private final double loanAmount;
     private final int compoundRate;
@@ -17,6 +18,10 @@ public class Loan {
     private double totalInterest;
     private double totalPayment;
     private Payment[] paymentsSchedule;
+
+    public int getLoanId() {
+        return this.loanId;
+    }
 
     public String getFullName() {
         return this.fullName;
@@ -71,7 +76,8 @@ public class Loan {
     }
 
     // Main Constructor
-    public Loan(String fullName, double loanAmount, int compoundRate, double interestRate, double administrationFee, int loanTerm, double fixedPeriodPayment) {
+    public Loan(int loanId, String fullName, double loanAmount, int compoundRate, double interestRate, double administrationFee, int loanTerm, double fixedPeriodPayment) {
+        this.loanId = loanId;
         this.fullName = fullName;
         this.loanAmount = loanAmount;
         this.compoundRate = compoundRate; // for now its calculated monthly
@@ -117,7 +123,8 @@ public class Loan {
 
     // method to convert a loan object to a CSV formatted String line
     public String toCSVStringLine() {
-        return this.getFullName() + "," +
+        return this.getLoanId() + "," +
+                this.getFullName() + "," +
                 this.getLoanAmount() + "," +
                 this.getCompoundRate() + "," +
                 this.getInterestRate() + "," +

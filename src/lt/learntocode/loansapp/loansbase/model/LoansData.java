@@ -18,16 +18,15 @@ public class LoansData {
         return null;
     }
 
-    public boolean insertNewLoan(Loan loan) {
-        for (int i = 0; i < this.loansDataArray.length; i++) {
-            if (this.loansDataArray[i] == null) {
-                this.loansDataArray[i] = loan;
-                this.loansDataRecordsCounter++; // increase loan records number with each new loan
-                return true;
-            }
+    public int insertNewLoan(Loan loan) {
+        if (this.loansDataArray.length > this.loansDataRecordsCounter) {
+            this.loansDataArray[this.loansDataRecordsCounter] = loan;
+            // return inserted position and increase loan records number with each new loan;
+            return ++this.loansDataRecordsCounter;
+        } else {
+            System.err.println("Error: Cannot insert new Loan obj, there is no more space inside loansDataArray");
+            return -1;
         }
-        System.err.println("Klaida: Nepavyko irasyti naujos pasolos, nes nepavyko iterpti naujo loan in loansDataArray masyva - nera laisvos (null) vietos masyve.");
-        return false;
     }
 
     // method to convert loan[] array objects to CSV formatted String with multiple lines
