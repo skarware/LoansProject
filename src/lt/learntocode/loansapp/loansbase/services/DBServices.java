@@ -4,8 +4,13 @@ package lt.learntocode.loansapp.loansbase.services;
 import lt.learntocode.loansapp.loansbase.database.ConnectionManager;
 import lt.learntocode.loansapp.loansbase.database.DBType;
 import lt.learntocode.loansapp.loansbase.database.beans.LoanBean;
+import lt.learntocode.loansapp.loansbase.database.tables.LoansManager;
+import lt.learntocode.loansapp.loansbase.helpers.LoansCalculatorHelper;
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DBServices {
 
@@ -21,13 +26,53 @@ public class DBServices {
 
     }
 
-
     public boolean loadLoansData(LoansData loansData) {
-        return false;
+        System.out.print("Loading loans data from a DATABASE...");
+        try {
+            if (parseResultSet(loansData)) {
+                if (loansData.getLoansDataRecordsCounter() > 0) {
+                    System.out.println("\tdata successfully loaded.");
+                } else {
+                    System.out.println("\tDATABASE is empty.");
+                }
+                return true; // return true if data loading from a database is successful
+            } else {
+                System.err.println("...ERROR: Failed to load loans data from a DATABASE...");
+                return false; // if data loading from a database failed return false
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public boolean saveLoansData(LoansData loansData) {
-        return false;
+    private boolean parseResultSet(LoansData loansData) throws SQLException {
+        // create loanHelper obj to calculate loan's payment schedule
+        LoansCalculatorHelper loansCalculatorHelper = new LoansCalculatorHelper();
+        // get ResultSet obj of all rows in Loans table
+        ResultSet rs = LoansManager.getAllRows();
+        if (rs != null) {
+            while (rs.next()) {
+                // encapsulate row data into bean obj
+                LoanBean bean = LoansManager.getRow(rs.getInt("loan_id"));
+                // convert bean obj to loan obj
+                Loan loan = loanBeanToLoanObj(bean);
+                // try to insert new loan object into loansData array
+                if (loansData.insertNewLoan(loan) > -1) {
+                    if (loan != null) {
+                        // if inserted successfully calculate new loan's payment schedule
+                        loansCalculatorHelper.calcPaymentsSchedule(loan);
+                    } else {
+                        System.err.println("ERROR: reading data from a DATABASE got null instead of loan obj");
+                    }
+                }
+            }
+                rs.close(); // after all is done with ResultSet obj we shall close it (it come opened from other method)
+        } else {
+            System.err.println("ERROR: cannot read any rows in Loans table from a DATABASE");
+            return false; // return false if ResultSet is null
+        }
+        return true; // return true if ResultSet is ok
     }
 
     private Loan loanBeanToLoanObj(LoanBean bean) {
@@ -50,13 +95,13 @@ public class DBServices {
     }
 
     private LoanBean LoanObjToLoanBean(Loan loan) {
+        LoanBean bean = new LoanBean();
         // check if Loan obj is not null before converting it to bean obj
         if (loan == null) {
             System.err.println("Loan obj is null obj, can not covert it to LoanBean obj");
             return null;
         } else {
             System.out.println("Converting LoanObj to LoanBean");
-            LoanBean bean = new LoanBean();
             bean.setLoanId(loan.getLoanId());
             bean.setFullName(loan.getFullName());
             bean.setLoanAmount(loan.getLoanAmount());
@@ -65,7 +110,12 @@ public class DBServices {
             bean.setAdministrationFee(loan.getAdministrationFee());
             bean.setLoanTerm(loan.getLoanTerm());
             bean.setFixedPeriodPayment(loan.getFixedPeriodPayment());
-            return bean;
         }
+        return bean;
+    }
+
+    public boolean saveLoansData(LoansData loansData) {
+
+        return false;
     }
 }

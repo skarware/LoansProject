@@ -157,7 +157,7 @@ public class CLIServices {
         for (int i = 0; i < loanRecordsInArr; i++) {
             loan = loansData.getLoan(i);
             if (loan != null) {
-                System.out.printf("Paskola Nr. %d: %s\n", i + 1, this.loanInfo(loan));
+                System.out.printf("Paskola Nr. %s\n", this.loanInfo(loan));
                 isEmpty = false;
             } else if (loan == null) {
                 System.out.printf("Paskola Nr. %d: --- ištrinta --- \n", i + 1);
@@ -204,7 +204,7 @@ public class CLIServices {
     }
 
     private String loanInfo(Loan loan) {
-        return String.format("%s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
+        return String.format("%d: %s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getLoanId(), loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
     }
 
 }

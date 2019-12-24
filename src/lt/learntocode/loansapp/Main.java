@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         // Setup persistent data source to load from and save to
-        loanServices.setDataSrc(DataSrc.FILE);
+        loanServices.setDataSrc(DataSrc.DATABASE);
 
         // Testing Mode for TESTING PURPOSES ONLY
 //        loanServices.testingMode();

@@ -58,7 +58,7 @@ public class ConnectionManager {    // Singelton for Database connection
         // if connection is not opened already then open it and return the reference
         if (conn == null) {
             if (openConnection()) {
-                System.out.println("Connection to DB opened");
+                System.out.println("Connection to Database opened");
                 return conn;
             } else {
                 return null;
@@ -70,7 +70,7 @@ public class ConnectionManager {    // Singelton for Database connection
 
     // public method for explicitly closing connection
     public void close() {
-        System.out.println("Closing connection to DB");
+        System.out.println("Closing connection to Database");
         try {
             // close and null the connection so we can explicitly manage the opening and closing of the connection from anywhere in the application but only by calling this method
             conn.close();

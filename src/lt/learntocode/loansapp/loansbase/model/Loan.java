@@ -3,7 +3,7 @@ package lt.learntocode.loansapp.loansbase.model;
 import java.time.LocalDate;
 
 public class Loan {
-    private int loanId;
+    private final int loanId;
     private final String fullName;
     private final double loanAmount;
     private final int compoundRate;

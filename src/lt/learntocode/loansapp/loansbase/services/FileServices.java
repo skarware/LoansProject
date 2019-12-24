@@ -69,22 +69,22 @@ public class FileServices {
         }
     }
 
-    // method to read CSV string lines from a file, convert to loan[] array objects
     public boolean loadLoansData(LoansData loansData) {
+        System.out.print("Loading loans data from a FILE...");
         if (parseBufferedCSVStrings(loansData)) {
-            System.out.print("Bandoma užkrauti paskolų duomenis iš failo...");
             if (loansData.getLoansDataRecordsCounter() > 0) {
-                System.out.println("\tduomenys sėkmingai užkrauti.");
+                System.out.println("\tdata successfully loaded.");
             } else {
-                System.out.println("\tduomenų failas tuščias.");
+                System.out.println("\tdata FILE is empty.");
             }
             return true; // return true if data loading from a file is successful
         } else {
-            System.err.println("...KLAIDA: Nepavyko atkurti paskolų duomenų iš failo...");
+            System.err.println("...ERROR: Failed to load loans data from a FILE...");
             return false; // if data loading from a file failed return false
         }
     }
 
+    // read CSV string lines from a file, convert to loan[] array objects
     private boolean parseBufferedCSVStrings(LoansData loansData) {
         // create loanHelper obj to calculate loan's payment schedule
         LoansCalculatorHelper loansCalculatorHelper = new LoansCalculatorHelper();
@@ -103,11 +103,13 @@ public class FileServices {
                     if (loan == null) {
                         return false;
                     }
-                    if (loansData.insertNewLoan(loan) > -1) { // insert new loan object into loansData array
+                    // try to insert new loan object into loansData array
+                    if (loansData.insertNewLoan(loan) > -1) {
                         if (loan != null) {
-                            loansCalculatorHelper.calcPaymentsSchedule(loan); // if inserted successfully calculate new loan's payment schedule
+                            // if inserted successfully calculate new loan's payment schedule
+                            loansCalculatorHelper.calcPaymentsSchedule(loan);
                         } else {
-                            System.err.println("Klaida: skaitant duomenis is failo gautas 'null' loan objektas");
+                            System.err.println("ERROR: reading data from a FILE got null instead of loan obj");
                         }
                     }
                 }
