@@ -47,15 +47,15 @@ public class FileServices {
                         // return true if String data written to file successfully
                         return true;
                     } else {
-                        System.err.println("Klaida: Nepavyko irasyti duomenu \"" + string + "\" i file");
+                        System.err.println("ERROR: Failed to save data into a \"" + string + "\" FILE");
                         return false;
                     }
                 } else {
-                    System.err.println("Klaida: Nepavyko sukurti failo ir irasyti \"" + string + "\" i file");
+                    System.err.println("ERROR: Failed to create and save data into a \"" + string + "\" FILE");
                     return false;
                 }
             } catch (IOException e) {
-                System.err.println("IOException: Nepavyko sukurti failo ir i ji irasyti duomenu  \"" + string + "\": " + e.getMessage());
+                System.err.println("ERROR: Caught IOException while trying to create and save data into a \"" + string + "\" FILE: \n" + e.getMessage());
                 return false;
             }
         } else {
@@ -63,7 +63,7 @@ public class FileServices {
                 System.out.println("Nauji duomenys sėkminai įrašyti į failą.");
                 return true;
             } else {
-                System.err.println("Klaida: Nepavyko irasyti \"" + string + "\" i file");
+                System.err.println("ERROR: Failed to save data into a \"" + string + "\" FILE");
                 return false;
             }
         }
@@ -79,7 +79,7 @@ public class FileServices {
             }
             return true; // return true if data loading from a file is successful
         } else {
-            System.err.println("...ERROR: Failed to load loans data from a FILE...");
+            System.err.println("\tERROR: Failed to load loans data from a FILE...");
             return false; // if data loading from a file failed return false
         }
     }
@@ -109,14 +109,14 @@ public class FileServices {
                             // if inserted successfully calculate new loan's payment schedule
                             loansCalculatorHelper.calcPaymentsSchedule(loan);
                         } else {
-                            System.err.println("ERROR: reading data from a FILE got null instead of loan obj");
+                            System.err.println("ERROR: Reading data from a FILE got null instead of loan obj");
                         }
                     }
                 }
             } while (CSVLine != null);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("IOException: Ivyko klaida, nepavyko nuskaityti failo ir atkurti loansData duomenu: " + e.getMessage());
+            System.err.println("ERROR: Caught IOException while trying to read and loads data from a FILE: \n" + e.getMessage());
             return false;
         }
         return true;
@@ -140,7 +140,7 @@ public class FileServices {
             loanTerm = Integer.parseInt(findNthValueInCSVLine(CSVLine, 6));
             fixedPeriodPayment = Double.parseDouble(findNthValueInCSVLine(CSVLine, 7));
         } catch (NumberFormatException e) {
-            System.err.println("NumberFormatException Klaida: Nepavyko isparsinti bufferedCSVStrings eilutes i int ar double tipa.");
+            System.err.println("ERROR: Caught NumberFormatException while trying to parse bufferedCSVStrings string type into int or double types.");
             return null;
         }
         return new Loan(loanId, fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);

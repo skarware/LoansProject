@@ -14,7 +14,7 @@ public class LoansData {
         if (loansDataArray[index] != null) {
             return loansDataArray[index];
         }
-        System.err.println("Klaida: Nera tokios loan paskolos loanArr masyve, todel grazinti jos nepavyksta");
+        System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
         return null;
     }
 
@@ -24,7 +24,7 @@ public class LoansData {
             // return inserted position and increase loan records number with each new loan;
             return ++this.loansDataRecordsCounter;
         } else {
-            System.err.println("Error: Cannot insert new Loan obj, there is no more space inside loansDataArray");
+            System.err.println("Error: Failed to insert new Loan obj, there is no more space inside loans array");
             return -1;
         }
     }

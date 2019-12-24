@@ -23,8 +23,6 @@ public class LoansCalculatorHelper {
             if (loan.insertNewPayment(payment)) {
                 // After new payment inserted increase loan's totals
                 loan.increaseScheduleTotals(payment);
-            } else {
-                System.err.println("Klaida: Nepavyko irasyti naujo payment i paymentsSchedule[] masyva."); // just in case it fails inform the user
             }
         }
     }

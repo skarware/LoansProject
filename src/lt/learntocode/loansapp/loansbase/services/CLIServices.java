@@ -44,7 +44,7 @@ public class CLIServices {
             try {
                 input = new Scanner(System.in).nextLine(); // if not new Scanner, this might not going to work as you want it to
             } catch (Exception e) {
-                System.err.println("KLAIDA getValidStringInput() metode");
+                System.err.println("Error caught in getValidStringInput() method");
             }
         } while (!ValidationUtil.stringInputLength(input, minWords, maxLength));
         return input;
@@ -57,14 +57,14 @@ public class CLIServices {
             try {
                 key = new Scanner(System.in).next().charAt(0); // if not new Scanner, this might not going to work as you want it to
             } catch (Exception e) {
-                System.err.println("KLAIDA getValidCharKeyInput() metode");
+                System.err.println("Error caught in getValidCharKeyInput() method");
             }
         } while (!ValidationUtil.charKeyInput(key, (char[]) validKeyOptions));
         return key;
     }
 
     private int getCompoundRateInput(int compoundRate) {
-        char key = getValidCharKeyInput("Kas kiek laiko   perskaičiuoti palūkanas?:\n\t" +
+        char key = getValidCharKeyInput("Kas kiek laiko perskaičiuoti palūkanas?:\n\t" +
                 "kas mėnesį (įvesti m)\n\t" +
                 "kas metus (įvesti M)\n\t" +
                 "\tįvesti: ", 'm', 'M');
@@ -133,6 +133,7 @@ public class CLIServices {
         System.out.println("C - Greitas skaičiavimas");
         System.out.println("E - baigti darbą");
         System.out.println(sepLine);
+        System.out.print("Įveskite raidę: ");
     }
 
     public int getMainMenu() {
@@ -152,17 +153,17 @@ public class CLIServices {
         int loanRecordsInArr = loansData.getLoansDataRecordsCounter();
 
         System.out.println(sepLine);
-        System.out.printf("Vartotojas atliko %d %s\n", loanRecordsInArr, (loanRecordsInArr > 9 || loanRecordsInArr < 2) ? "skaičavimų" : "skaičavimus");
+        System.out.printf("Išsaugotų paskolų sąrašas:\n");
         System.out.println(sepLine);
         for (int i = 0; i < loanRecordsInArr; i++) {
             loan = loansData.getLoan(i);
             if (loan != null) {
-                System.out.printf("Paskola Nr. %s\n", this.loanInfo(loan));
+                System.out.printf("Paskola Nr. %d: %s\n", i + 1, this.loanInfo(loan));
                 isEmpty = false;
             } else if (loan == null) {
                 System.out.printf("Paskola Nr. %d: --- ištrinta --- \n", i + 1);
             } else {
-                System.err.println("Įvyko klaida atvaizduojant paskolų masyvą!");
+                System.err.println("Error occurred printing loans Array!");
             }
         }
         if (isEmpty) {
@@ -204,7 +205,7 @@ public class CLIServices {
     }
 
     private String loanInfo(Loan loan) {
-        return String.format("%d: %s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getLoanId(), loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
+        return String.format("%s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
     }
 
 }

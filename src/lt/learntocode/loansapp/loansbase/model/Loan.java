@@ -104,7 +104,7 @@ public class Loan {
                 return true;
             }
         }
-        System.err.println("Klaida: nepavyko iterpti naujo payment i loan masyva, nes nerado laisvos vietos masyve.");
+        System.err.println("ERROR: Could not insert new payment obj into payments array. Probably there is no space left in payments array.");
         return false;
     }
 
@@ -112,7 +112,7 @@ public class Loan {
         if (this.paymentsSchedule[index] != null) {
             return this.paymentsSchedule[index];
         }
-        System.err.println("Klaida: Nera tokio paymento paymentsSchedule masyve, todel grazinti jo nepavyksta");
+        System.err.println("ERROR: payment obj in payments array for a given index not found. Be aware null is returned instead");
         return null;
     }
 

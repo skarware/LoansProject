@@ -37,7 +37,7 @@ public class DBServices {
                 }
                 return true; // return true if data loading from a database is successful
             } else {
-                System.err.println("...ERROR: Failed to load loans data from a DATABASE...");
+                System.err.println("\tERROR: Failed to load loans data from a DATABASE...");
                 return false; // if data loading from a database failed return false
             }
         } catch (SQLException e) {
@@ -69,7 +69,7 @@ public class DBServices {
             }
                 rs.close(); // after all is done with ResultSet obj we shall close it (it come opened from other method)
         } else {
-            System.err.println("ERROR: cannot read any rows in Loans table from a DATABASE");
+            System.err.println("ERROR: failed to read rows in Loans table from a DATABASE");
             return false; // return false if ResultSet is null
         }
         return true; // return true if ResultSet is ok
@@ -81,7 +81,6 @@ public class DBServices {
             System.err.println("LoanBean is null obj, can not covert it to Loan obj");
             return null;
         } else {
-            System.out.println("Converting LoanBean to LoanObj");
             return new Loan(
                     bean.getLoanId(),
                     bean.getFullName(),
@@ -101,7 +100,6 @@ public class DBServices {
             System.err.println("Loan obj is null obj, can not covert it to LoanBean obj");
             return null;
         } else {
-            System.out.println("Converting LoanObj to LoanBean");
             bean.setLoanId(loan.getLoanId());
             bean.setFullName(loan.getFullName());
             bean.setLoanAmount(loan.getLoanAmount());

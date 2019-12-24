@@ -141,7 +141,7 @@ public class LoanServices {
             // save new data from loansData to a FILE or DATABASE
             this.saveLoansDataObj();
         } else {
-            System.err.println("Klaida: Nepavyko irasyti naujos paskolos i masyva."); // just in case it fails inform the user
+            System.err.println("ERROR: Failed to save new loan obj into loans array."); // just in case it fails inform the user
         }
         // in Any case go back to Start
     }

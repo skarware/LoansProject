@@ -9,7 +9,7 @@ public class FileUtil {
             out.println(string);
             return true;
         } catch (IOException e) {
-            System.err.println("IOException: Nepavyko išsaugoti CSV formatuoto failo su loansData duomenimis: " + e.getMessage());
+            System.err.println("ERROR: Caught IOException while trying to write a CSV formatted FILE with loans data: \n" + e.getMessage());
             return false;
         }
     }
@@ -19,7 +19,7 @@ public class FileUtil {
 //            return new BufferedReader(new InputStreamReader(new FileInputStream(file))); // kuo skiriasi nuo apatinio varianto?
             return new BufferedReader(new FileReader(file));
         } catch (IOException e) {
-            System.err.println("IOException: Nepavyko nuskaityti CSV formatuoto failo su loansData duomenimis: " + e.getMessage());
+            System.err.println("ERROR: Caught IOException while trying to read CSV formatted FILE with loans data: \n" + e.getMessage());
             e.printStackTrace();
             return null;
         }
