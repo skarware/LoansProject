@@ -1,6 +1,8 @@
 package lt.learntocode.loansapp.loansbase.database.beans;
 
-public class LoanBean {
+// Each row is data entity and in Java data entity is represented with type of class Java Bean, it represent the structure of the table
+public class LoanBean { // Java Bean should have table name in singularity - Loan(){}, but in this situation it named LoanBean(){}
+    // Class field names don't need required to match columns in database, you can shorten them if needed
     private int loanId;
     private String fullName;
     private double loanAmount;
@@ -9,6 +11,8 @@ public class LoanBean {
     private double administrationFee;
     private int loanTerm;
     private double fixedPeriodPayment;
+
+    // Class properties in Java Beans are always private, to access or modify them you need getters and setters methods
 
     public int getLoanId() {
         return loanId;

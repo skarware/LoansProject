@@ -8,6 +8,7 @@ import lt.learntocode.loansapp.loansbase.database.tables.LoansManager;
 import lt.learntocode.loansapp.loansbase.helpers.LoansCalculatorHelper;
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
+import lt.learntocode.loansapp.loansbase.utils.DBUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,7 +42,7 @@ public class DBServices {
                 return false; // if data loading from a database failed return false
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            DBUtil.processException(e);
             return false;
         }
     }

@@ -1,7 +1,7 @@
 package lt.learntocode.loansapp;
 
 import lt.learntocode.loansapp.loansbase.database.tables.LoansManager;
-import lt.learntocode.loansapp.loansbase.services.DataSrc;
+import lt.learntocode.loansapp.loansbase.DataSrc;
 import lt.learntocode.loansapp.loansbase.services.LoanServices;
 
 

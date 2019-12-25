@@ -1,5 +1,7 @@
 package lt.learntocode.loansapp.loansbase.database;
 
+import lt.learntocode.loansapp.loansbase.utils.DBUtil;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -49,7 +51,7 @@ public class ConnectionManager {    // Singelton for Database connection
                     return false;
             }
         } catch (SQLException e) {
-            System.err.println(e);
+            DBUtil.processException(e);
             return false;
         }
     }
@@ -77,6 +79,7 @@ public class ConnectionManager {    // Singelton for Database connection
             conn = null;
         } catch (Exception e) {
             System.err.println(e);
+            System.err.println("ERROR: Failed to close() DATABASE connection");
         }
     }
 

@@ -128,8 +128,8 @@ public class CLIServices {
 
     private void printMainMenu() {
         System.out.println(sepLine);
-        System.out.println("A - Naujas skaičiavimas;");
-        System.out.println("B - Peržiūrėti ankstesnius skaičiavimus;");
+        System.out.println("A - Naujas skaičiavimas");
+        System.out.println("B - Peržiūrėti ankstesnius skaičiavimus");
         System.out.println("C - Greitas skaičiavimas");
         System.out.println("E - baigti darbą");
         System.out.println(sepLine);
