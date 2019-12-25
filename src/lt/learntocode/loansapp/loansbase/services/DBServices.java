@@ -113,8 +113,14 @@ public class DBServices {
         return bean;
     }
 
-    public boolean saveLoansData(LoansData loansData) {
-
+    public boolean saveNewLoanObj(Loan loan) {
+        // Encapsulate Loan class object into Java bean data entity for easy manipulation
+        LoanBean bean = LoanObjToLoanBean(loan);
+        // Check if bean is not null and inserted into Database as new row successfully
+        if (bean != null && LoansManager.insertRow(bean)) {
+            System.out.println("New Loan data successfully saved into DATABASE");
+            return true;
+        }
         return false;
     }
 }

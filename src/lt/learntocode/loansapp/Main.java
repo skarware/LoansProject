@@ -13,11 +13,8 @@ public class Main {
         // Setup persistent data source to load from and save to
         loanServices.setDataSrc(DataSrc.DATABASE);
 
-        // Testing Mode for TESTING PURPOSES ONLY
-//        loanServices.testingMode();
-
         // for Testing DB
-        LoansManager.displayAllRows();
+//        LoansManager.displayAllRows();
 
         // To start loan calculator
         loanServices.start();

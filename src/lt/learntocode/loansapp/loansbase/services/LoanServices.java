@@ -21,20 +21,6 @@ public class LoanServices {
         System.out.println("Data source: " + dataSrc);
     }
 
-    void testingMode() {
-        // insert some loans for testing purposes only
-        this.createMonthlyScheduledLoan(new Loan(0, "testas vienas", 1000, 12, 10, 0, 10, 0)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan(1, "testas du", 1000, 12, 10, 100, 10, 0)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan(2, "testas trys", 1000, 12, 10, 50, 0, 100d)); // FOR TESTING PURPOSES ONLY //
-        this.createMonthlyScheduledLoan(new Loan(3, "testas keturi", 1000, 12, 10, 100, 0, 100d)); // FOR TESTING PURPOSES ONLY //
-        // To test how toCSVString() output looks
-//        for (int i = 0; i < 4; i++) {
-//            System.out.println("toCSVString(): " + loansData.getLoan(i).toCSVString());
-//        }
-        // To test how toCSVStringBuilder() output looks
-        System.out.println("toCSVStrings():\n" + loansData.toCSVStrings());
-    }
-
     public void start() {
         // Start the procedure to start Interest Rate Calculator
 
@@ -75,16 +61,16 @@ public class LoanServices {
         }
     }
 
-    private void saveLoansDataObj() {
+    private void saveNewLoanData(Loan loan) {
         boolean isDataSavedSuccessfully = true;
         switch (this.dataSrc) {
             case DATABASE:
                 // Save loansData obj to DATABASE
-                isDataSavedSuccessfully = dbServices.saveLoansData(loansData);
+                isDataSavedSuccessfully = dbServices.saveNewLoanObj(loan);
                 break;
             case FILE:
                 // Save loansData obj to FILE
-                isDataSavedSuccessfully = fileServices.saveLoansData(loansData);
+                isDataSavedSuccessfully = fileServices.saveLoansData(this.loansData);
                 break;
             default:
                 System.err.println("ERROR: Not valid option for Saving data");
@@ -139,8 +125,8 @@ public class LoanServices {
             loansCalculatorHelper.calcPaymentsSchedule(loan);
             // print loan obj to console
             cli.printSchedule(loan);
-            // save new data from loansData to a FILE or DATABASE
-            this.saveLoansDataObj();
+            // save new data to a FILE or DATABASE
+            this.saveNewLoanData(loan);
         } else {
             System.err.println("ERROR: Failed to save new loan obj into loans array."); // just in case it fails inform the user
         }

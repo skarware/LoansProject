@@ -2,11 +2,13 @@ package lt.learntocode.loansapp.loansbase.database.tables;
 
 import lt.learntocode.loansapp.loansbase.database.ConnectionManager;
 import lt.learntocode.loansapp.loansbase.database.beans.LoanBean;
+import lt.learntocode.loansapp.loansbase.utils.DBUtil;
 
 import java.sql.*;
 
 public class LoansManager {
 
+    // Open and get reference to a connection to the Database from ConnectionManager singleton.
     private static Connection conn = ConnectionManager.getInstance().getConnection();
 
     public static void displayAllRows() throws SQLException {
@@ -114,5 +116,59 @@ public class LoansManager {
             System.err.println(e);
             return null;
         }
+    }
+
+    public static boolean insertRow(LoanBean bean) {
+        // SQL command to insert data
+        String sql = "INSERT INTO loans (fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment)" +
+                " VALUES (?,?,?,?,?,?,?)"; // for JBDC "?" marking place holders
+        // To get back inserted row auto incremented ID/Primary Key value we declare ResultSet obj
+        ResultSet genKey = null;
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(
+                        sql,
+                        Statement.RETURN_GENERATED_KEYS // Explicitly asking to return auto incremented incremented ID/Primary Key from Database (no matter what Database management system in use, please return if possible)
+                );
+        ) {
+            // Populating place holders with values from LoanBean obj
+            stmt.setString(1, bean.getFullName());
+            stmt.setDouble(2, bean.getLoanAmount());
+            stmt.setInt(3, bean.getCompoundRate());
+            stmt.setDouble(4, bean.getInterestRate());
+            stmt.setDouble(5, bean.getAdministrationFee());
+            stmt.setInt(6, bean.getLoanTerm());
+            stmt.setDouble(7, bean.getFixedPeriodPayment());
+            // To know if insert statement was successful we assign returned integer value - a number of rows were affected by the insert statement
+            int rowsAffected = stmt.executeUpdate();
+            // for this particular insert statement only 1 row should be affected if execution was successful and a row was inserted into Database
+            if (rowsAffected == 1) {
+                // Get generated primary key value
+                genKey = stmt.getGeneratedKeys();
+                // returned value is a ResultSet so the cursor starts before first row of data, we call next() method to move cursor forward the one and only row of data
+                genKey.next();
+                // from getGeneratedKeys() method we always get a ResultSet of single column and single row, which we get by calling .getInt(1); 1 - for the first column
+                // returned value we pass to the bean obj so it can be accessible from the calling context later if needed after insertRow method returned
+                bean.setLoanId(genKey.getInt(1));
+            } else {
+                // if we get here insert statement was not successful
+                System.err.println("ERROR: No rows were affected, inserting new data into DATABASE failed");
+                return false;
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+            return false;
+        } finally {
+            // as with all ResultSets we need explicitly close then you done with it
+            if (genKey != null) {
+                try {
+                    genKey.close();
+                } catch (SQLException e) {
+                    DBUtil.processException(e);
+                }
+            }
+        }
+        // if we get here insert statement was successful
+        return true;
     }
 }

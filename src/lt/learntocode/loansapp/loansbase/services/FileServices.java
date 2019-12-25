@@ -19,6 +19,7 @@ public class FileServices {
         String loansDataString = loansData.toCSVStrings(); // get loan[] as CSV strings
         // save loan[] and paymentsSchedule[] to separate files inside resources and paymentsSchedules folders
         if (saveStringToFile(loansDataString, FILE_TO_SAVE) && savePaymentsScheduleToFile(loansData)) {
+            System.out.println("New data successfully written to a FILE.");
             // if both operations true
             return true;
         }
@@ -60,7 +61,7 @@ public class FileServices {
             }
         } else {
             if (FileUtil.writeFile(string, file)) {
-                System.out.println("Nauji duomenys sėkminai įrašyti į failą.");
+                // return true if String data written to file successfully
                 return true;
             } else {
                 System.err.println("ERROR: Failed to save data into a \"" + string + "\" FILE");
