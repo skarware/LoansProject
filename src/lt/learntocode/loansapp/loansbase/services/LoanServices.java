@@ -39,6 +39,15 @@ public class LoanServices {
         this.initiateMainMenu();
     }
 
+    private void exitProgram() {
+        // Start the procedure to exit a program
+        System.out.println("\n\tPrograma baigia darbą,\n\t\t\t iki...");
+        // Explicitly close Database connection on application exit
+        ConnectionManager.getInstance().close();
+        // exit the application
+        System.exit(0);
+    }
+
     private void initializeLoansDataObj() {
         boolean isDataLoadedSuccessfully = true;
         switch (this.dataSrc) {
@@ -82,31 +91,58 @@ public class LoanServices {
         }
     }
 
-    private void exitProgram() {
-        // Start the procedure to exit a program
-        System.out.println("\n\tPrograma baigia darbą,\n\t\t\t iki...");
-        // close Database connection on application exit
-        ConnectionManager.getInstance().close();
-        // exit the application
-        System.exit(0);
+    private void updateLoan(Loan loan) {
+
+
+        // if data source FILE save in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
+        if (this.dataSrc == DataSrc.FILE) {
+            this.saveNewLoanData(null);
+        }
     }
 
-    private void initiateMainMenu() { // rename to getConsoleMainMenu
+    private void deleteLoan(Loan loan) {
+        // if data source DATABASE then Delete loan data from it
+        if (this.dataSrc == DataSrc.DATABASE && loan != null) {
+//            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
+            if (dbServices.deleteLoan(loan.getLoanId())) { // delete loan from database directly by loanId
+                System.out.println("Paskola sėkmingai ištrinta iš duomenų bazės");
+            } else {
+                System.err.println("ERROR: Failed to delete loan from DATABASE");
+            }
+        }
+        // To delete loan obj change its reference to a null obj to mark it as deleted in LoansData obj
+        if (loansData.removeLoan(loan) && loan != null) {
+            System.out.println("Paskola sėkmingai ištrinta iš vidinės atminties");
+        } else {
+            System.err.println("ERROR: Failed to delete loan from memory");
+        }
+        // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
+        if (this.dataSrc == DataSrc.FILE && loan != null) {
+            this.saveNewLoanData(null);
+            System.out.println("Paskola sėkmingai ištrinta iš failo");
+        }
+    }
+
+    private void initiateMainMenu() { // rename to getConsoleMainMenu?
+
+        int loansDataRecordsCounter = loansData.getLoansDataRecordsCounter();
         // Get User Interface and follow the User
         int userOption = cli.getMainMenu();
         // useOption returns 3 different ways to follow
         if (userOption == 97 || userOption == 65) { // if key == 'a' or A
-            Loan loan = cli.getAddLoanMenu(loansData.getLoansDataRecordsCounter()); // get User Interface and new loan obj from add new loan menu
-            this.createMonthlyScheduledLoan(loan); // and add new loan into Loans Array
+            Loan loan = cli.getAddLoanMenu(loansDataRecordsCounter); // get User Interface and new loan obj from add new loan menu
+            this.createMonthlyScheduledLoan(loan); // and Add new loan into Loans Array
         } else if (userOption == 98 || userOption == 66) { // if key == 'b' or B
-            cli.getLoansSummaryList(loansData); // view loans in loanArr
+            cli.getLoansSummaryList(loansData); // View loans in loanArr
         } else if (userOption == 114 || userOption == 82) { // if key == 'r' or R
-            cli.getUpdateLoansMenu(loansData); // get menu to Update loan
+            Loan loan = cli.getModifyLoansMenu(loansData, 0); // get menu to Update loan
+            this.updateLoan(loan); // Update loan data in LoansData obj and data source
         } else if (userOption == 100 || userOption == 68) { // if key == 'd' or D
-            cli.getDeleteLoansMenu(loansData); // get menu to Delete loan
+            Loan loan = cli.getModifyLoansMenu(loansData, 1); // get menu to Delete loan
+            this.deleteLoan(loan); // Remove loan from LoansData obj and data source
         } else if (userOption == 99 || userOption == 67) { // if key == 'c' or C
-            Loan loan = cli.getAddLoanMenu(loansData.getLoansDataRecordsCounter());
-            this.createFastMonthlyScheduledLoan(loan); // calculate ne loan but dont save/insert into loanArr
+            Loan loan = cli.getAddLoanMenu(loansDataRecordsCounter);
+            this.createFastMonthlyScheduledLoan(loan); // calculate new loan but dont save/insert into loanArr
         } else if (userOption == 101 || userOption == 69) {
             this.exitProgram(); // Exit program if key == 'e' or E
         }

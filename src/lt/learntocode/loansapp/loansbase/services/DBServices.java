@@ -24,7 +24,6 @@ public class DBServices {
         connMngr.setDBType(DBType.HSQLDB);
 //        ConnectionManager.getInstance().setDBType(DBType.HSQLDB);
 
-
     }
 
     public boolean loadLoansData(LoansData loansData) {
@@ -123,4 +122,13 @@ public class DBServices {
         }
         return false;
     }
+
+//    public boolean deleteLoan(Loan loan) {
+    public boolean deleteLoan(int loanId) {
+
+        System.out.println("Cia bus logika istrinti is duomenu bazes");
+
+        return false;
+    }
+
 }

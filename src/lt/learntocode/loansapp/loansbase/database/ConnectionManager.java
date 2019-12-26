@@ -74,9 +74,12 @@ public class ConnectionManager {    // Singelton for Database connection
     public void close() {
         System.out.println("Closing connection to Database");
         try {
-            // close and null the connection so we can explicitly manage the opening and closing of the connection from anywhere in the application but only by calling this method
-            conn.close();
-            conn = null;
+            // Check if conn was opened before closing it to avoid NullPointerException
+            if (conn != null) {
+                // close and null the connection so we can explicitly manage the opening and closing of the connection from anywhere in the application but only by calling this method
+                conn.close();
+                conn = null;
+            }
         } catch (Exception e) {
             System.err.println(e);
             System.err.println("ERROR: Failed to close() DATABASE connection");

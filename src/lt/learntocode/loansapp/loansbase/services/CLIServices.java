@@ -107,9 +107,9 @@ public class CLIServices {
         return new Loan(nextFreeIndex, fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);
     }
 
-    public int getLoansSummaryMenu() {
-        int userOption = -1; // -1 is returned in case of NumberFormatException
-        this.printLoansSummaryMenu();
+    public int getUserOptionMenu(String outputMsg) {
+        int userOption = -1; // As an error -1 is returned in case of NumberFormatException
+        this.printUserOptionMenu(outputMsg);
         try {
             userOption = Integer.parseInt(scanner.next());
         } catch (NumberFormatException e) {
@@ -118,12 +118,12 @@ public class CLIServices {
         return userOption;
     }
 
-    private void printLoansSummaryMenu() {
+    private void printUserOptionMenu(String outputMsg) {
         System.out.println(sepLine);
         System.out.println("Norėdami Grįžti į pagrindinį meniu įveskite 0;");
-        System.out.println("Norėdami peržiūrėti detalią ataskaitą pasirinkite paskolos numerį;");
+        System.out.println(outputMsg);
         System.out.println(sepLine);
-        System.out.print("Įveskite skaičių: ");
+        System.out.print("Įveskite numerį: ");
     }
 
     private void printMainMenu() {
@@ -150,36 +150,56 @@ public class CLIServices {
 
     // Print Loans Summary Menu and get User Interface
     public void getLoansSummaryList(LoansData loansData) {
-        // print Loans summary list
+        // Print Loans summary list
         printLoansSummaryList(loansData);
-        // loansData.getLoansDataRecordsCounter() used multiple times through a method so makes sens to assign its value to a local variable
-        int loanRecordsCounter = loansData.getLoansDataRecordsCounter();
-        // Check if there is loans to display and print user menu for options
-        if (loanRecordsCounter > 0) {
-            int userOption = this.getLoansSummaryMenu(); // Print user menu for detailed loan's schedule reviews
-            if (userOption > 0 || userOption == -1) { // -1 is returned as invalid userOption to start loans Summary menu again.
-                if (userOption <= loanRecordsCounter && userOption > 0) { // if user option is valid then print loan schedule
-                    this.printSchedule(loansData.getLoan(userOption - 1)); // minus one because array index is zero-based
+        // local variables
+        int loansDataRecordsCounter = loansData.getLoansDataRecordsCounter();
+        String outputMsg = "Norėdami peržiūrėti detalią ataskaitą pasirinkite paskolos numerį;";
+        Loan loan = null;
+        // Get user option menu with customized output message
+        int userOption = getUserOption(loansDataRecordsCounter, outputMsg);
+        // Get loan obj if userOption > 0
+        if (userOption > 0) {
+            loan = loansData.getLoan(userOption - 1); // minus one because array index is zero-based
+            // Check if loan is not null and print its schedule in details
+            if (loan != null) {
+                printSchedule(loan); // print schedule for a given loan
+            } else {
+                System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
+            }
+        }
+        // Go back to calling context
+    }
+
+    private int getUserOption(int loansDataRecordsCounter, String outputMsg) {
+        // Check if there is loans to print
+        if (loansDataRecordsCounter > 0) {
+            // Print user menu for available options
+            int userOption = this.getUserOptionMenu(outputMsg);
+            // Check if returned user option is valid
+            if (userOption > 0 || userOption == -1) { // -1 is returned as invalid userOption to start menu again.
+                if (userOption <= loansDataRecordsCounter && userOption > 0) { // if user option is valid then return the value
+                    return userOption;
                 } else {
                     // if option is invalid let the user know what he can and shall do
                     System.err.printf("Tokio paskolos numerio nėra.\n" +
                             "\t\t\tĮveskite skaičių tarp 1 ir %d \n" +
-                            "\t\t\t\t\t\t arba 0 norėdami grįžti į Pagrindinį Meniu.\n", loanRecordsCounter);
+                            "\t\t\t\t\t\t arba 0 norėdami grįžti į Pagrindinį Meniu.\n", loansDataRecordsCounter);
                 }
-                // get Loans Summary Menu again.
-                this.getLoansSummaryList(loansData);
+                // get loans Menu again
+                return getUserOption(loansDataRecordsCounter, outputMsg);
             }
         } else {
             // If there is no loans in data source inform the user
             System.out.println("Nėra duomenų apie paskolas");
         }
-        // Back to calling context
+        return -1;
     }
 
     private void printLoansSummaryList(LoansData loansData) {
         Loan loan = null;
         System.out.println(sepLine);
-        System.out.println("Išsaugotų paskolų sąrašas:");
+        System.out.println(".:: Išsaugotų paskolų sąrašas ::.");
         System.out.println(sepLine);
         for (int i = 0; i < loansData.getLoansDataRecordsCounter(); i++) {
             loan = loansData.getLoan(i);
@@ -191,13 +211,35 @@ public class CLIServices {
         }
     }
 
-    public void getUpdateLoansMenu(LoansData loansData) {
+    public Loan getModifyLoansMenu(LoansData loansData, int deleteFlagMsg) {
+        // Print Loans summary list
+        printLoansSummaryList(loansData);
+        // local variables
+        int loansDataRecordsCounter = loansData.getLoansDataRecordsCounter();
+        // set outputMsg for loan obj removing or updating
+        String outputMsg = deleteFlagMsg > 0 ? "Norėdami IŠTRINTI paskolą pasirinkite jos numerį;" : "Norėdami REDAGUOTI paskolos duomenis pasirinkite jos numerį;";
+        Loan loan = null;
+        // Get user option menu with customized output message
+        int userOption = getUserOption(loansDataRecordsCounter, outputMsg);
+        // Get loan obj if userOption > 0
+        if (userOption > 0) {
+            loan = loansData.getLoan(userOption - 1); // minus one because array index is zero-based
+            // Check if loan is not null and TAKE SOME ACTION
+            if (loan != null) {
 
 
 
-    }
+                // HERE DO SOME ACTION for a given loan
 
-    public void getDeleteLoansMenu(LoansData loansData) {
+
+
+            } else {
+                System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
+            }
+        }
+        // return either loan obj or null
+        return loan;
+        // Go back to calling context
     }
 
     public void printSchedule(Loan loan) {

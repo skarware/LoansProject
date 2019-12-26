@@ -14,7 +14,6 @@ public class LoansData {
         if (loansDataArray[index] != null) {
             return loansDataArray[index];
         }
-        System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
         return null;
     }
 
@@ -29,10 +28,15 @@ public class LoansData {
         }
     }
 
-    public int removeLoan(Loan loan) {
+    public boolean removeLoan(Loan loan) {
         // ! Do not modify loansDataRecordsCounter after removing loan or program fail to work correctly !
-
-        return -1;
+        for (int i = 0; i < loansDataArray.length; i++) {
+            if (loansDataArray[i] == loan) {
+                loansDataArray[i] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
     // method to convert loan[] array objects to CSV formatted String with multiple lines
