@@ -4,7 +4,7 @@ public class LoansData {
 
     private static final int LOAN_ARRAY_LENGTH = 100;
     private final Loan[] loansDataArray = new Loan[LOAN_ARRAY_LENGTH];
-    private int loansDataRecordsCounter = 0;
+    private int loansDataRecordsCounter = 0; // Counter is increased only and by only by insertNewLoan method after new loan is created or on program data initialization on start
 
     public int getLoansDataRecordsCounter() {
         return this.loansDataRecordsCounter;
@@ -27,6 +27,12 @@ public class LoansData {
             System.err.println("Error: Failed to insert new Loan obj, there is no more space inside loans array");
             return -1;
         }
+    }
+
+    public int removeLoan(Loan loan) {
+        // ! Do not modify loansDataRecordsCounter after removing loan or program fail to work correctly !
+
+        return -1;
     }
 
     // method to convert loan[] array objects to CSV formatted String with multiple lines

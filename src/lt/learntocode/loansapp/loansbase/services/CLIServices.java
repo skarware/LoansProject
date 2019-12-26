@@ -147,42 +147,52 @@ public class CLIServices {
     }
 
     // Print Loans Summary Menu and get User Interface
-    public void getMenuLoansSummary(LoansData loansData) {
-        Loan loan;
-        boolean isEmpty = true;
-        int loanRecordsInArr = loansData.getLoansDataRecordsCounter();
+    public void getLoansSummaryList(LoansData loansData) {
+        // print Loans summary list
+        printLoansSummaryList(loansData);
+        // loansData.getLoansDataRecordsCounter() used multiple times through a method so makes sens to assign its value to a local variable
+        int loanRecordsCounter = loansData.getLoansDataRecordsCounter();
+        // Check if there is loans to display and print user menu for options
+        if (loanRecordsCounter > 0) {
+            int userOption = this.getLoansSummaryMenu(); // Print user menu for detailed loan's schedule reviews
+            if (userOption > 0 || userOption == -1) { // -1 is returned as invalid userOption to start loans Summary menu again.
+                if (userOption <= loanRecordsCounter && userOption > 0) { // if user option is valid then print loan schedule
+                    this.printSchedule(loansData.getLoan(userOption - 1)); // minus one because array index is zero-based
+                } else {
+                    // if option is invalid let the user know what he can and shall do
+                    System.err.printf("Tokio paskolos numerio nėra.\n" +
+                            "\t\t\tĮveskite skaičių tarp 1 ir %d \n" +
+                            "\t\t\t\t\t\t arba 0 norėdami grįžti į Pagrindinį Meniu.\n", loanRecordsCounter);
+                }
+                // get Loans Summary Menu again.
+                this.getLoansSummaryList(loansData);
+            }
+        } else {
+            // If there is no loans in data source inform the user
+            System.out.println("Nėra duomenų apie paskolas");
+        }
+        // Back to calling context
+    }
 
+    private void printLoansSummaryList(LoansData loansData) {
+        Loan loan = null;
         System.out.println(sepLine);
-        System.out.printf("Išsaugotų paskolų sąrašas:\n");
+        System.out.println("Išsaugotų paskolų sąrašas:");
         System.out.println(sepLine);
-        for (int i = 0; i < loanRecordsInArr; i++) {
+        for (int i = 0; i < loansData.getLoansDataRecordsCounter(); i++) {
             loan = loansData.getLoan(i);
             if (loan != null) {
                 System.out.printf("Paskola Nr. %d: %s\n", i + 1, this.loanInfo(loan));
-                isEmpty = false;
-            } else if (loan == null) {
-                System.out.printf("Paskola Nr. %d: --- ištrinta --- \n", i + 1);
             } else {
-                System.err.println("Error occurred printing loans Array!");
+                System.out.printf("Paskola Nr. %d: --- ištrinta --- \n", i + 1);
             }
         }
-        if (isEmpty) {
-            System.out.println("Nėra duomenų apie paskolas");
-        } else {
-            int userOption = this.getLoansSummaryMenu();
-            if (userOption > 0 || userOption == -1) { // -1 for returned invalid userOption to start loans Summary menu again.
-                if (userOption <= loanRecordsInArr && userOption > 0) {
-                    this.printSchedule(loansData.getLoan(userOption - 1)); // because index in array starts from zero
-                } else {
-                    System.err.printf("Tokio paskolos numerio nėra.\n" +
-                            "\t\t\tĮveskite skaičių tarp 1 ir %d \n" +
-                            "\t\t\t\t\t\t arba 0 norėdami grįžti į Pagrindinį Meniu.\n", loanRecordsInArr);
-                }
-                // Print Loans Summary Menu, again.
-                this.getMenuLoansSummary(loansData);
-            }
-        }
-        // Back to start then we reach this point
+    }
+
+    public void getUpdateLoansMenu(LoansData loansData) {
+
+
+
     }
 
     public void printSchedule(Loan loan) {
@@ -207,5 +217,6 @@ public class CLIServices {
     private String loanInfo(Loan loan) {
         return String.format("%s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
     }
+
 
 }

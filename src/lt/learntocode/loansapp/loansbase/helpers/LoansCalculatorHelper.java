@@ -35,5 +35,4 @@ public class LoansCalculatorHelper {
         return Math.round((endBalance - periodPayment) * 100000) / 100000d;
     }
 
-
 }
