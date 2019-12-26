@@ -96,16 +96,16 @@ public class LoanServices {
         int userOption = cli.getMainMenu();
         // useOption returns 3 different ways to follow
         if (userOption == 97 || userOption == 65) { // if key == 'a' or A
-            Loan loan = cli.getMenuAddLoan(loansData.getLoansDataRecordsCounter()); // get User Interface and new loan obj from add new loan menu
+            Loan loan = cli.getAddLoanMenu(loansData.getLoansDataRecordsCounter()); // get User Interface and new loan obj from add new loan menu
             this.createMonthlyScheduledLoan(loan); // and add new loan into Loans Array
         } else if (userOption == 98 || userOption == 66) { // if key == 'b' or B
             cli.getLoansSummaryList(loansData); // view loans in loanArr
         } else if (userOption == 114 || userOption == 82) { // if key == 'r' or R
             cli.getUpdateLoansMenu(loansData); // get menu to Update loan
-//        } else if (userOption == 100 || userOption == 68) { // if key == 'd' or D
-//            cli.getDeleteLoansMenu(loansData); // get menu to Delete loan
+        } else if (userOption == 100 || userOption == 68) { // if key == 'd' or D
+            cli.getDeleteLoansMenu(loansData); // get menu to Delete loan
         } else if (userOption == 99 || userOption == 67) { // if key == 'c' or C
-            Loan loan = cli.getMenuAddLoan(loansData.getLoansDataRecordsCounter());
+            Loan loan = cli.getAddLoanMenu(loansData.getLoansDataRecordsCounter());
             this.createFastMonthlyScheduledLoan(loan); // calculate ne loan but dont save/insert into loanArr
         } else if (userOption == 101 || userOption == 69) {
             this.exitProgram(); // Exit program if key == 'e' or E

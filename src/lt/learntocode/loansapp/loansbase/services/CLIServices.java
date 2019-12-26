@@ -78,7 +78,7 @@ public class CLIServices {
         return compoundRate;
     }
 
-    public Loan getMenuAddLoan(int nextFreeIndex) {
+    public Loan getAddLoanMenu(int nextFreeIndex) {
         String fullName;
         double loanAmount;
         int compoundRate = 12; // Kol kas constanta, jog kas menesi perskaicuoti, visg gali buti ir metams ar savaitemis
@@ -131,6 +131,8 @@ public class CLIServices {
         System.out.println("A - Naujas skaičiavimas");
         System.out.println("B - Peržiūrėti ankstesnius skaičiavimus");
         System.out.println("C - Greitas skaičiavimas");
+        System.out.println("R - Redaguoti ankstesnius skaičiavimus");
+        System.out.println("D - Ištrinti ankstesnius skaičiavimus");
         System.out.println("E - baigti darbą");
         System.out.println(sepLine);
         System.out.print("Įveskite raidę: ");
@@ -140,7 +142,7 @@ public class CLIServices {
         // print User Menu Interface
         this.printMainMenu();
 //        // get user keypress and check Key Validity
-        char key = getValidCharKeyInput("", 'a', 'b', 'c', 'e', 'A', 'B', 'C', 'E');
+        char key = getValidCharKeyInput("", 'a', 'b', 'r', 'd', 'c', 'e', 'A', 'B', 'R', 'D', 'C', 'E');
         // print user choice and return it OR exit program
         System.out.printf("Jūsų pasirinkimas: %s\n", ((Character) key).toString().toUpperCase());
         return key;
@@ -195,6 +197,9 @@ public class CLIServices {
 
     }
 
+    public void getDeleteLoansMenu(LoansData loansData) {
+    }
+
     public void printSchedule(Loan loan) {
         String line = "----------------------------------------------------------------------------";
         System.out.println(line);
@@ -217,6 +222,5 @@ public class CLIServices {
     private String loanInfo(Loan loan) {
         return String.format("%s, Suma %.2f €, palūkanos %.0f %%, terminas %d mėn.;", loan.getFullName(), loan.getTotalLoanAmount(), loan.getInterestRate(), loan.getPeriods());
     }
-
 
 }
