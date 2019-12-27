@@ -95,16 +95,8 @@ public class LoanServices {
     }
 
     private void updateLoan(Loan loan) {
-        int updateIndex = -1;
-        // if data source DATABASE then Delete loan data from it
-        if (this.dataSrc == DataSrc.DATABASE && loan != null) {
-//            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
-            if (dbServices.deleteLoan(loan.getLoanId())) { // delete loan from database directly by loanId
-                System.out.println("Paskola sėkmingai perašyta duomenų bazėje");
-            } else {
-                System.err.println("ERROR: Failed to delete loan from DATABASE");
-            }
-        }
+        // If loan is null do nothing just return
+        if (loan == null) return;
         // Get new Loan obj with same loanId as old loan obj to be replaced
         Loan newLoan = cli.getAddLoanMenu(loan.getLoanId());
         // Update old loan with new newLoan in memory data
@@ -115,30 +107,43 @@ public class LoanServices {
         } else {
             System.err.println("ERROR: Failed to update loan in memory");
         }
-        // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
-        if (this.dataSrc == DataSrc.FILE) {
-            this.saveNewLoanData(null);
+        // Switch statement for loan update for data source in use
+        switch (this.dataSrc) {
+            case DATABASE:  // if data source DATABASE then Update loan data in it
+                    if (dbServices.updateLoan(newLoan)) {
+                        System.out.println("Paskola sėkmingai perašyta duomenų bazėje");
+                    } else {
+                        System.err.println("ERROR: Failed to update loan in DATABASE");
+                    }
+                break;
+            case FILE:  // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
+                this.saveNewLoanData(null);
+                break;
+            default:
+                System.err.println("ERROR: Not valid option for data source Update");
+                break;
         }
     }
 
     private void deleteLoan(Loan loan) {
+        // If loan is null do nothing just return
+        if (loan == null) return;
         // if data source DATABASE then Delete loan data from it
-        if (this.dataSrc == DataSrc.DATABASE && loan != null) {
-//            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
-            if (dbServices.deleteLoan(loan.getLoanId())) { // delete loan from database directly by loanId
+        if (this.dataSrc == DataSrc.DATABASE) {
+            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
                 System.out.println("Paskola sėkmingai ištrinta iš duomenų bazės");
             } else {
                 System.err.println("ERROR: Failed to delete loan from DATABASE");
             }
         }
         // To delete loan obj change its reference to a null obj to mark it as deleted in LoansData obj
-        if (loansData.removeLoan(loan) > -1 && loan != null) {
+        if (loansData.removeLoan(loan) > -1) {
             System.out.println("Paskola sėkmingai ištrinta iš vidinės atminties");
         } else {
             System.err.println("ERROR: Failed to delete loan from memory");
         }
         // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
-        if (this.dataSrc == DataSrc.FILE && loan != null) {
+        if (this.dataSrc == DataSrc.FILE) {
             this.saveNewLoanData(null);
         }
     }

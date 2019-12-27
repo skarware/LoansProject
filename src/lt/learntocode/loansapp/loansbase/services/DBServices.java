@@ -123,12 +123,17 @@ public class DBServices {
         return false;
     }
 
-//    public boolean deleteLoan(Loan loan) {
-    public boolean deleteLoan(int loanId) {
+    public boolean deleteLoan(Loan loan) {
 
         System.out.println("Cia bus logika istrinti is duomenu bazes");
 
         return false;
     }
 
+    public boolean updateLoan(Loan newLoan) {
+
+
+
+        return false;
+    }
 }

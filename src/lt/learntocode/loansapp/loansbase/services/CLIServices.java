@@ -165,7 +165,7 @@ public class CLIServices {
             if (loan != null) {
                 printSchedule(loan); // print schedule for a given loan
             } else {
-                System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
+                System.err.println("Pasirinkta paskola neegzistuoja");
             }
         }
         // Go back to calling context
@@ -225,16 +225,8 @@ public class CLIServices {
         if (userOption > 0) {
             loan = loansData.getLoan(userOption - 1); // minus one because array index is zero-based
             // Check if loan is not null and TAKE SOME ACTION
-            if (loan != null) {
-
-
-
-                // HERE DO SOME ACTION for a given loan
-
-
-
-            } else {
-                System.err.println("ERROR: loan obj in loans array for a given index not found. Be aware null is returned instead");
+            if (loan == null) {
+                System.err.println("Pasirinkta paskola neegzistuoja");
             }
         }
         // return either loan obj or null
