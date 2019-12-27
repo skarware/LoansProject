@@ -78,7 +78,7 @@ public class CLIServices {
         return compoundRate;
     }
 
-    public Loan getAddLoanMenu(int nextFreeIndex) {
+    public Loan getAddLoanMenu(int nextLoanId) {
         String fullName;
         double loanAmount;
         int compoundRate = 12; // Kol kas constanta, jog kas menesi perskaicuoti, visg gali buti ir metams ar savaitemis
@@ -104,7 +104,7 @@ public class CLIServices {
         } else if (key == 'f') {
             fixedPeriodPayment = getValidDoubleInput("Įveskite fiksuoto dydžio mėnesinę įmoką (neįskaičiuojant palūkanų): ", 1, loanAmount);
         }
-        return new Loan(nextFreeIndex, fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);
+        return new Loan(nextLoanId, fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment);
     }
 
     public int getUserOptionMenu(String outputMsg) {

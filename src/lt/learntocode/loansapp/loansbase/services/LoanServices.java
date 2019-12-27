@@ -2,9 +2,12 @@ package lt.learntocode.loansapp.loansbase.services;
 
 import lt.learntocode.loansapp.loansbase.DataSrc;
 import lt.learntocode.loansapp.loansbase.database.ConnectionManager;
+import lt.learntocode.loansapp.loansbase.database.tables.LoansManager;
 import lt.learntocode.loansapp.loansbase.helpers.LoansCalculatorHelper;
 import lt.learntocode.loansapp.loansbase.model.Loan;
 import lt.learntocode.loansapp.loansbase.model.LoansData;
+
+import java.sql.SQLException;
 
 public class LoanServices {
     private LoansData loansData = new LoansData();
@@ -92,9 +95,27 @@ public class LoanServices {
     }
 
     private void updateLoan(Loan loan) {
-
-
-        // if data source FILE save in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
+        int updateIndex = -1;
+        // if data source DATABASE then Delete loan data from it
+        if (this.dataSrc == DataSrc.DATABASE && loan != null) {
+//            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
+            if (dbServices.deleteLoan(loan.getLoanId())) { // delete loan from database directly by loanId
+                System.out.println("Paskola sėkmingai perašyta duomenų bazėje");
+            } else {
+                System.err.println("ERROR: Failed to delete loan from DATABASE");
+            }
+        }
+        // Get new Loan obj with same loanId as old loan obj to be replaced
+        Loan newLoan = cli.getAddLoanMenu(loan.getLoanId());
+        // Update old loan with new newLoan in memory data
+        if (loansData.updateLoan(loan, newLoan)) {
+            // if updated successfully calculate new loan's payment schedule
+            loansCalculatorHelper.calcPaymentsSchedule(newLoan);
+            System.out.println("Paskola sėkmingai perašyta vidinėje atmintyje");
+        } else {
+            System.err.println("ERROR: Failed to update loan in memory");
+        }
+        // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
         if (this.dataSrc == DataSrc.FILE) {
             this.saveNewLoanData(null);
         }
@@ -111,7 +132,7 @@ public class LoanServices {
             }
         }
         // To delete loan obj change its reference to a null obj to mark it as deleted in LoansData obj
-        if (loansData.removeLoan(loan) && loan != null) {
+        if (loansData.removeLoan(loan) > -1 && loan != null) {
             System.out.println("Paskola sėkmingai ištrinta iš vidinės atminties");
         } else {
             System.err.println("ERROR: Failed to delete loan from memory");
@@ -119,29 +140,38 @@ public class LoanServices {
         // if data source FILE save modified in memory data to a FILE (Then writing data to a file it is overwritten, not appended)
         if (this.dataSrc == DataSrc.FILE && loan != null) {
             this.saveNewLoanData(null);
-            System.out.println("Paskola sėkmingai ištrinta iš failo");
         }
     }
 
     private void initiateMainMenu() { // rename to getConsoleMainMenu?
 
-        int loansDataRecordsCounter = loansData.getLoansDataRecordsCounter();
+        // for Testing DB
+        try {
+            LoansManager.displayAllRows();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Get next loanId
+        int nextLoanId = loansData.getNextLoanId();
         // Get User Interface and follow the User
         int userOption = cli.getMainMenu();
         // useOption returns 3 different ways to follow
         if (userOption == 97 || userOption == 65) { // if key == 'a' or A
-            Loan loan = cli.getAddLoanMenu(loansDataRecordsCounter); // get User Interface and new loan obj from add new loan menu
+            Loan loan = cli.getAddLoanMenu(nextLoanId); // get User Interface and new loan obj from add new loan menu
             this.createMonthlyScheduledLoan(loan); // and Add new loan into Loans Array
         } else if (userOption == 98 || userOption == 66) { // if key == 'b' or B
             cli.getLoansSummaryList(loansData); // View loans in loanArr
         } else if (userOption == 114 || userOption == 82) { // if key == 'r' or R
             Loan loan = cli.getModifyLoansMenu(loansData, 0); // get menu to Update loan
-            this.updateLoan(loan); // Update loan data in LoansData obj and data source
+            // Update loan data in LoansData obj and data source
+            this.updateLoan(loan);
         } else if (userOption == 100 || userOption == 68) { // if key == 'd' or D
             Loan loan = cli.getModifyLoansMenu(loansData, 1); // get menu to Delete loan
-            this.deleteLoan(loan); // Remove loan from LoansData obj and data source
+            // Remove loan from LoansData obj and data source
+            this.deleteLoan(loan);
         } else if (userOption == 99 || userOption == 67) { // if key == 'c' or C
-            Loan loan = cli.getAddLoanMenu(loansDataRecordsCounter);
+            Loan loan = cli.getAddLoanMenu(nextLoanId);
             this.createFastMonthlyScheduledLoan(loan); // calculate new loan but dont save/insert into loanArr
         } else if (userOption == 101 || userOption == 69) {
             this.exitProgram(); // Exit program if key == 'e' or E
@@ -160,7 +190,7 @@ public class LoanServices {
 
     private void createMonthlyScheduledLoan(Loan loan) {
         // if new Loan inserted successfully then do the calculations for a given loan
-        if (loansData.insertNewLoan(loan) > -1) {
+        if (loansData.insertLoan(loan) > -1) {
             // After new loan obj inserted calculate Payment Schedule
             loansCalculatorHelper.calcPaymentsSchedule(loan);
             // print loan obj to console

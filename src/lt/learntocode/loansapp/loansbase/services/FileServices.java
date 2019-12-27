@@ -19,7 +19,7 @@ public class FileServices {
         String loansDataString = loansData.toCSVStrings(); // get loan[] as CSV strings
         // save loan[] and paymentsSchedule[] to separate files inside resources and paymentsSchedules folders
         if (saveStringToFile(loansDataString, FILE_TO_SAVE) && savePaymentsScheduleToFile(loansData)) {
-            System.out.println("New data successfully written to a FILE.");
+            System.out.println("Data in memory successfully written to a FILE.");
             // if both operations true
             return true;
         }
@@ -29,12 +29,17 @@ public class FileServices {
 
     // method to save paymentsSchedule[] array objects as CSV string lines into the file
     public boolean savePaymentsScheduleToFile(LoansData loansData) {
+        if (loansData.isLoansDataArrayEmpty()) {
+            return true; // return true if loansDataArray is empty because it is not an error but simple no data inside Loans array
+        }
         int loanIndex = loansData.getLoansDataRecordsCounter() - 1;
         File file = new File((PAYMENTS_FILES_FOLDER + "loan_" + (loanIndex + 1) + ".txt")); // recourses/paymentsSchedules/loan_1.txt
         Loan loan = loansData.getLoan(loanIndex);
-        String paymentsScheduleString = loan.toCSVStrings();
-        if (saveStringToFile(paymentsScheduleString, file)) {
-            return true;
+        if (loan != null) {
+            String paymentsScheduleString = loan.toCSVStrings();
+            if (saveStringToFile(paymentsScheduleString, file)) {
+                return true;
+            }
         }
         return false;
     }
@@ -105,13 +110,11 @@ public class FileServices {
                         return false;
                     }
                     // try to insert new loan object into loansData array
-                    if (loansData.insertNewLoan(loan) > -1) {
-                        if (loan != null) {
-                            // if inserted successfully calculate new loan's payment schedule
-                            loansCalculatorHelper.calcPaymentsSchedule(loan);
-                        } else {
-                            System.err.println("ERROR: Reading data from a FILE got null instead of loan obj");
-                        }
+                    if (loansData.insertLoan(loan) > -1) {
+                        // if inserted successfully calculate new loan's payment schedule
+                        loansCalculatorHelper.calcPaymentsSchedule(loan);
+                    } else {
+                        System.err.println("ERROR: Failed to insert data from a FILE");
                     }
                 }
             } while (CSVLine != null);

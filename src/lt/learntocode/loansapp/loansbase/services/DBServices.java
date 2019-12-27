@@ -58,7 +58,7 @@ public class DBServices {
                 // convert bean obj to loan obj
                 Loan loan = loanBeanToLoanObj(bean);
                 // try to insert new loan object into loansData array
-                if (loansData.insertNewLoan(loan) > -1) {
+                if (loansData.insertLoan(loan) > -1) {
                     if (loan != null) {
                         // if inserted successfully calculate new loan's payment schedule
                         loansCalculatorHelper.calcPaymentsSchedule(loan);
