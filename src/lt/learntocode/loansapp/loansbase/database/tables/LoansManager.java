@@ -14,12 +14,13 @@ public class LoansManager {
     public static void displayAllRows() throws SQLException {
 
         String sql = "SELECT * FROM loans";
+
         try (
                 Statement stmt = conn.createStatement(
-//                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.TYPE_FORWARD_ONLY,
-//                        ResultSet.CONCUR_UPDATABLE, // Updatable ResultSet which have live connection to underlying Database
-                        ResultSet.CONCUR_READ_ONLY // Read only ResultSet
+//                        ResultSet.TYPE_SCROLL_INSENSITIVE,    // Let you scroll cursor through ResultSet forward and back
+                        ResultSet.TYPE_FORWARD_ONLY,    // No scrolling through ResultSet, cursor moving only forward
+//                        ResultSet.CONCUR_UPDATABLE,   // Updatable ResultSet which have live connection to underlying Database
+                        ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
                 );
                 // ResultSet instance encapsulate data returned from Database
                 ResultSet rs = stmt.executeQuery(sql);
@@ -40,6 +41,7 @@ public class LoansManager {
         }
     }
 
+    // method to Get row from DATABASE
     public static LoanBean getRow(int loanId) throws SQLException {
 
         String sql = "SELECT * FROM loans WHERE loan_id = ?";
@@ -49,10 +51,10 @@ public class LoansManager {
         try (
                 PreparedStatement stmt = conn.prepareStatement(
                         sql,
-//                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.TYPE_FORWARD_ONLY,
-//                        ResultSet.CONCUR_UPDATABLE, // Updatable ResultSet which have live connection to underlying Database
-                        ResultSet.CONCUR_READ_ONLY // Read only ResultSet
+//                        ResultSet.TYPE_SCROLL_INSENSITIVE,    // Let you scroll cursor through ResultSet forward and back
+                        ResultSet.TYPE_FORWARD_ONLY,    // No scrolling through ResultSet, cursor moving only forward
+//                        ResultSet.CONCUR_UPDATABLE,   // Updatable ResultSet which have live connection to underlying Database
+                        ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
                 );
         ) {
             // must be set params outside try with resources parenthesis because you can not modify the statement obj within try resources block.
@@ -103,10 +105,10 @@ public class LoansManager {
 
         try (
                 Statement stmt = conn.createStatement(
-//                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.TYPE_FORWARD_ONLY,
-//                        ResultSet.CONCUR_UPDATABLE, // Updatable ResultSet which have live connection to underlying Database
-                        ResultSet.CONCUR_READ_ONLY // Read only ResultSet
+//                        ResultSet.TYPE_SCROLL_INSENSITIVE,    // Let you scroll cursor through ResultSet forward and back
+                        ResultSet.TYPE_FORWARD_ONLY,    // No scrolling through ResultSet, cursor moving only forward
+//                        ResultSet.CONCUR_UPDATABLE,   // Updatable ResultSet which have live connection to underlying Database
+                        ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
                 );
         ) {
             ResultSet rs = stmt.executeQuery(sql); // declared and initialized here because we need to close it later in returned method
@@ -118,11 +120,13 @@ public class LoansManager {
         }
     }
 
+    // method to Insert row in DATABASE
     public static boolean insertRow(LoanBean bean) {
         // SQL command to insert data
         String sql = "INSERT INTO loans (fullName, loanAmount, compoundRate, interestRate, administrationFee, loanTerm, fixedPeriodPayment)" +
-                " VALUES (?,?,?,?,?,?,?)"; // for JBDC "?" marking place holders
-        // To get back inserted row auto incremented ID/Primary Key value we declare ResultSet obj
+                " VALUES (?,?,?,?,?,?,?)";  // "?" for JBDC to mark place holders
+
+        // To get back inserted row auto incremented ID/Primary Key value we need a ResultSet obj
         ResultSet genKey = null;
 
         try (
@@ -131,17 +135,11 @@ public class LoansManager {
                         Statement.RETURN_GENERATED_KEYS // Explicitly asking to return auto incremented incremented ID/Primary Key from Database (no matter what Database management system in use, please return if possible)
                 );
         ) {
-            // Populating place holders with values from LoanBean obj
-            stmt.setString(1, bean.getFullName());
-            stmt.setDouble(2, bean.getLoanAmount());
-            stmt.setInt(3, bean.getCompoundRate());
-            stmt.setDouble(4, bean.getInterestRate());
-            stmt.setDouble(5, bean.getAdministrationFee());
-            stmt.setInt(6, bean.getLoanTerm());
-            stmt.setDouble(7, bean.getFixedPeriodPayment());
+            // Populating place holders in PreparedStatement with values from LoanBean obj
+            setStatementWithBeanValues(bean, stmt);
             // To know if insert statement was successful we assign returned integer value - a number of rows were affected by the insert statement
             int rowsAffected = stmt.executeUpdate();
-            // for this particular insert statement only 1 row should be affected if execution was successful and a row was inserted into Database
+            // for this insert statement only 1 row should be affected if execution was successful and a row was inserted into Database
             if (rowsAffected == 1) {
                 // Get generated primary key value
                 genKey = stmt.getGeneratedKeys();
@@ -159,7 +157,7 @@ public class LoansManager {
             DBUtil.processException(e);
             return false;
         } finally {
-            // as with all ResultSets we need explicitly close then you done with it
+            // as with all ResultSets we need explicitly close genKey then you done with it
             if (genKey != null) {
                 try {
                     genKey.close();
@@ -171,4 +169,51 @@ public class LoansManager {
         // if we get here insert statement was successful
         return true;
     }
+
+    // Populating place holders in PreparedStatement with values from LoanBean obj
+    private static void setStatementWithBeanValues(LoanBean bean, PreparedStatement stmt) throws SQLException {
+        stmt.setString(1, bean.getFullName());
+        stmt.setDouble(2, bean.getLoanAmount());
+        stmt.setInt(3, bean.getCompoundRate());
+        stmt.setDouble(4, bean.getInterestRate());
+        stmt.setDouble(5, bean.getAdministrationFee());
+        stmt.setInt(6, bean.getLoanTerm());
+        stmt.setDouble(7, bean.getFixedPeriodPayment());
+    }
+
+    // method to Update row in DATABASE
+    public static boolean updateRow(LoanBean bean) {
+        // SQL command to update data
+        String sql = "UPDATE loans SET " +
+                "fullName = ?, loanAmount = ?, compoundRate = ?, interestRate = ?, administrationFee = ?, loanTerm = ?, fixedPeriodPayment = ?" +
+                "WHERE loan_id = ?";    // "?" for JBDC to mark place holders
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(
+                        sql,
+//                        ResultSet.TYPE_SCROLL_INSENSITIVE,    // Let you scroll cursor through ResultSet forward and back
+                        ResultSet.TYPE_FORWARD_ONLY,    // No scrolling through ResultSet, cursor moving only forward
+//                        ResultSet.CONCUR_UPDATABLE,   // Updatable ResultSet which have live connection to underlying Database
+                        ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
+                );
+        ) {
+            // Populating place holders in PreparedStatement with values from LoanBean obj
+            setStatementWithBeanValues(bean, stmt);
+            // Set one more parameter value for WHERE clause for loan_id
+            stmt.setInt(8, bean.getLoanId());
+            // To know if update statement was successful we assign returned integer value - a number of rows were affected by the statement
+            int rowsAffected = stmt.executeUpdate();
+            // With the update statement where you filtering on Primary Key you should always get a value of 1 of affected rows
+            if (rowsAffected == 1) {
+                return true; // if 1 then indicate to the calling scope that Update was successful
+            } else {
+                System.err.println("ERROR: No rows were affected, updating data in DATABASE failed");
+                return false; // if value was other than 1 then something went wrong
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+            return false;
+        }
+    }
+
 }

@@ -26,6 +26,7 @@ public class DBServices {
 
     }
 
+    // General/Abstract method to load LoansData from DATABASE loans Table
     public boolean loadLoansData(LoansData loansData) {
         System.out.print("Loading loans data from a DATABASE...");
         try {
@@ -46,6 +47,7 @@ public class DBServices {
         }
     }
 
+    // Parse all DATABASE loans Table data into Loans array in LoansData
     private boolean parseResultSet(LoansData loansData) throws SQLException {
         // create loanHelper obj to calculate loan's payment schedule
         LoansCalculatorHelper loansCalculatorHelper = new LoansCalculatorHelper();
@@ -75,6 +77,7 @@ public class DBServices {
         return true; // return true if ResultSet is ok
     }
 
+    // Bean to Loan
     private Loan loanBeanToLoanObj(LoanBean bean) {
         // check if bean obj is not null before converting it to Loan obj
         if (bean == null) {
@@ -93,7 +96,8 @@ public class DBServices {
         }
     }
 
-    private LoanBean LoanObjToLoanBean(Loan loan) {
+    // Loan to Bean
+    private LoanBean loanObjToLoanBean(Loan loan) {
         LoanBean bean = new LoanBean();
         // check if Loan obj is not null before converting it to bean obj
         if (loan == null) {
@@ -114,7 +118,7 @@ public class DBServices {
 
     public boolean saveNewLoanObj(Loan loan) {
         // Encapsulate Loan class object into Java bean data entity for easy manipulation
-        LoanBean bean = LoanObjToLoanBean(loan);
+        LoanBean bean = loanObjToLoanBean(loan);
         // Check if bean is not null and inserted into Database as new row successfully
         if (bean != null && LoansManager.insertRow(bean)) {
             System.out.println("New Loan data successfully saved into DATABASE");
@@ -131,9 +135,13 @@ public class DBServices {
     }
 
     public boolean updateLoan(Loan newLoan) {
-
-
-
-        return false;
+        // Encapsulate Loan class object into Java bean data entity for easy manipulation
+        LoanBean bean = loanObjToLoanBean(newLoan);
+        // Check if bean is not null and update data in Database was successfully
+        if (bean != null && LoansManager.updateRow(bean)) {
+            System.out.println("Loan data successfully updated in DATABASE");
+            return true;
+        }
+        return false; // Indicate calling context that update has failed
     }
 }
