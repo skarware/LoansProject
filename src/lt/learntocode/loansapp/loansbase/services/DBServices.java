@@ -121,17 +121,22 @@ public class DBServices {
         LoanBean bean = loanObjToLoanBean(loan);
         // Check if bean is not null and inserted into Database as new row successfully
         if (bean != null && LoansManager.insertRow(bean)) {
+            // set loan obj loanId to match DATABASE generated Primary Key loan_id
+            loan.setLoanId(bean.getLoanId());
             System.out.println("New Loan data successfully saved into DATABASE");
             return true;
         }
         return false;
     }
 
-    public boolean deleteLoan(Loan loan) {
-
-        System.out.println("Cia bus logika istrinti is duomenu bazes");
-
-        return false;
+    public boolean deleteLoan(int loanId) {
+        // Check if data in Database successfully deleted
+        if (LoansManager.deleteRow(loanId)) {
+            System.out.println("Loan data successfully deleted from DATABASE");
+            return true; // Indicate calling context that delete has been successful
+        } else {
+            return false;
+        }
     }
 
     public boolean updateLoan(Loan newLoan) {

@@ -101,7 +101,7 @@ public class LoanServices {
         Loan newLoan = cli.getAddLoanMenu(loan.getLoanId());
         // Update old loan with new newLoan in memory data
         if (loansData.updateLoan(loan, newLoan)) {
-            // if updated successfully calculate new loan's payment schedule
+            // If updated successfully calculate new loan's payment schedule
             loansCalculatorHelper.calcPaymentsSchedule(newLoan);
             System.out.println("Paskola sėkmingai perašyta vidinėje atmintyje");
         } else {
@@ -130,7 +130,7 @@ public class LoanServices {
         if (loan == null) return;
         // if data source DATABASE then Delete loan data from it
         if (this.dataSrc == DataSrc.DATABASE) {
-            if (dbServices.deleteLoan(loan)) { // delete loan from database by loan obj
+            if (dbServices.deleteLoan(loan.getLoanId())) { // delete loan from database by loan obj
                 System.out.println("Paskola sėkmingai ištrinta iš duomenų bazės");
             } else {
                 System.err.println("ERROR: Failed to delete loan from DATABASE");
@@ -150,12 +150,12 @@ public class LoanServices {
 
     private void initiateMainMenu() { // rename to getConsoleMainMenu?
 
-        // for Testing DB
-        try {
-            LoansManager.displayAllRows();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        // for Testing DATABASE
+//        try {
+//            LoansManager.displayAllRows();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
         // Get next loanId
         int nextLoanId = loansData.getNextLoanId();

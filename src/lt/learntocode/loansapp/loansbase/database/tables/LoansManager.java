@@ -216,4 +216,35 @@ public class LoansManager {
         }
     }
 
+    // method to Delete row in DATABASE
+    public static boolean deleteRow(int loanId) {
+        // SQL command to delete data
+        String sql = "DELETE FROM loans WHERE loan_id = ?";    // "?" for JBDC to mark place holders
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(
+                        sql,
+//                        ResultSet.TYPE_SCROLL_INSENSITIVE,    // Let you scroll cursor through ResultSet forward and back
+                        ResultSet.TYPE_FORWARD_ONLY,    // No scrolling through ResultSet, cursor moving only forward
+//                        ResultSet.CONCUR_UPDATABLE,   // Updatable ResultSet which have live connection to underlying Database
+                        ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
+                );
+        ) {
+            // Setting the place holder value for WHERE clause for loan_id
+            stmt.setInt(1, loanId);
+            // To know if delete statement was successful we assign returned integer value - a number of rows were affected by the statement
+            int rowsAffected = stmt.executeUpdate();
+            // With the delete statement where you filtering on Primary Key you should always get a value of 1 of affected rows
+            if (rowsAffected == 1) {
+                return true; // if 1 then indicate to the calling scope that delete was successful
+            } else {
+                System.err.println("ERROR: No rows were affected, deleting data in DATABASE failed, loan probably does not exist");
+                return false; // if value was other than 1 that probably means that the row did not exist
+            }
+        } catch (SQLException e) {
+            DBUtil.processException(e);
+            return false;
+        }
+    }
+
 }

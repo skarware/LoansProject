@@ -7,6 +7,9 @@ public class LoansData {
     private int loansDataRecordsCounter = 0; // Counter is increased only and by only by insertNewLoan method after new loan is created or on program data initialization on start
     private int nextLoanId = 0;
 
+    public void setNextLoanId(int nextLoanId) {
+        this.nextLoanId = nextLoanId;
+    }
 
     public int getNextLoanId() {
         return nextLoanId;

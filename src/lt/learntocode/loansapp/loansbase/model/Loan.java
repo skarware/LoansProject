@@ -3,7 +3,7 @@ package lt.learntocode.loansapp.loansbase.model;
 import java.time.LocalDate;
 
 public class Loan {
-    private final int loanId;
+    private int loanId;
     private final String fullName;
     private final double loanAmount;
     private final int compoundRate;
@@ -18,6 +18,10 @@ public class Loan {
     private double totalInterest;
     private double totalPayment;
     private Payment[] paymentsSchedule;
+
+    public void setLoanId(int loanId) {
+        this.loanId = loanId;
+    }
 
     public int getLoanId() {
         return this.loanId;
