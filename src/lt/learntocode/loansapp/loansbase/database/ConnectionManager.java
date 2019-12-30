@@ -6,7 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionManager {    // Singelton for Database connection
+// The goal of singleton is to make sure that entire application can get teh reference to it but it can only be instantiated once from within the class itself
+public class ConnectionManager {    // Singleton for Database connection
     // ConnectionManager instance of itself initially set to null
     private static ConnectionManager instance = null;
     // credentials to connect to database
@@ -20,10 +21,10 @@ public class ConnectionManager {    // Singelton for Database connection
     private DBType dbType = DBType.HSQLDB;
     // connection object initially set to null
     private Connection conn = null;
-    // Singelton has no public constructors, only one instance of the class can be created from within the class itself
+    // Singleton has no public constructors, so only one instance of the class can be created from within the class itself
     private ConnectionManager() {
     }
-    // to get the reference to the one and only ConnectionManager object for the whole application, other parts of code will call this method
+    // to get the reference to the one and only ConnectionManager object for the whole application, other parts of code will call this static method
     public static ConnectionManager getInstance() {
         if (instance == null) {
             instance = new ConnectionManager();

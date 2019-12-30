@@ -9,7 +9,7 @@ import java.sql.*;
 public class LoansManager {
 
     // Open and get reference to a connection to the Database from ConnectionManager singleton.
-    private static Connection conn = ConnectionManager.getInstance().getConnection();
+    private static Connection conn = ConnectionManager.getInstance().getConnection(); // the first time any of these static methods are called, this static Connection obj get its reference
 
     public static void displayAllRows() throws SQLException {
 
@@ -23,7 +23,7 @@ public class LoansManager {
                         ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
                 );
                 // ResultSet instance encapsulate data returned from Database
-                ResultSet rs = stmt.executeQuery(sql);
+                ResultSet rs = stmt.executeQuery(sql);// for SQL SELECT statement We usually use executeQuery() method to get ResultSet obj with data we want to select from Database
         ) {
             System.out.println("Loans Table:");
             while (rs.next()) {
@@ -60,7 +60,7 @@ public class LoansManager {
             // must be set params outside try with resources parenthesis because you can not modify the statement obj within try resources block.
             stmt.setInt(1, loanId);
             // must fill params and call setInt() method before executeQuery() method to have an effect on statement query
-            rs = stmt.executeQuery();
+            rs = stmt.executeQuery(); // for SQL SELECT statement We usually use executeQuery() method to get ResultSet obj with data we want to select from Database
             // Take the data received from the query and Wrap it into instance of Java bean (LoanBean)
             if (rs.next()) {
                 bean.setLoanId(loanId);
@@ -111,9 +111,10 @@ public class LoansManager {
                         ResultSet.CONCUR_READ_ONLY      // Read only ResultSet
                 );
         ) {
-            ResultSet rs = stmt.executeQuery(sql); // declared and initialized here because we need to close it later in returned method
-            // ResultSet variable rs is closed in method where obj has been returned to, or we return closed obj with no access to data anymore
+            // declared and initialized ResultSet here because we need to close it later in calling context
+            ResultSet rs = stmt.executeQuery(sql); // for SQL SELECT statement We usually use executeQuery() method to get ResultSet obj with data we want to select from Database
             return rs;
+            // ResultSet obj rs is closed in method where obj has been returned to, or else we going to return closed obj with no access to data anymore
         } catch (SQLException e) {
             System.err.println(e);
             return null;
@@ -138,7 +139,7 @@ public class LoansManager {
             // Populating place holders in PreparedStatement with values from LoanBean obj
             setStatementWithBeanValues(bean, stmt);
             // To know if insert statement was successful we assign returned integer value - a number of rows were affected by the insert statement
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate(); // for SQL INSERT statement We usually use executeUpdate() method to get integer of affected rows in Database by an executed command
             // for this insert statement only 1 row should be affected if execution was successful and a row was inserted into Database
             if (rowsAffected == 1) {
                 // Get generated primary key value
@@ -202,7 +203,7 @@ public class LoansManager {
             // Set one more parameter value for WHERE clause for loan_id
             stmt.setInt(8, bean.getLoanId());
             // To know if update statement was successful we assign returned integer value - a number of rows were affected by the statement
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate(); // for SQL UPDATE statement We usually use executeUpdate() method to get integer of affected rows in Database by an executed command
             // With the update statement where you filtering on Primary Key you should always get a value of 1 of affected rows
             if (rowsAffected == 1) {
                 return true; // if 1 then indicate to the calling scope that Update was successful
@@ -233,7 +234,7 @@ public class LoansManager {
             // Setting the place holder value for WHERE clause for loan_id
             stmt.setInt(1, loanId);
             // To know if delete statement was successful we assign returned integer value - a number of rows were affected by the statement
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate(); // for SQL DELETE statement We usually use executeUpdate() method to get integer of affected rows in Database by an executed command
             // With the delete statement where you filtering on Primary Key you should always get a value of 1 of affected rows
             if (rowsAffected == 1) {
                 return true; // if 1 then indicate to the calling scope that delete was successful
